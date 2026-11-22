@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bolo Rishikesh</title>
+<meta name="description" content="Report cleanliness problems in Rishikesh in three taps, and learn how to respect Maa Ganga.">
+<meta name="theme-color" content="#1d5bd6">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path d='M24 3C12.4 3 3 10.8 3 20.5c0 5.3 2.8 10 7.2 13.2L8.5 44l10.3-6.3c1.7.4 3.4.6 5.2.6 11.6 0 21-7.8 21-17.8S35.6 3 24 3z' fill='%231d5bd6'/><path d='M12 19l6-7 4.5 4.5L27 11l9 8' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/><path d='M10 27c3.5 0 3.5-2.6 7-2.6s3.5 2.6 7 2.6 3.5-2.6 7-2.6 3.5 2.6 7 2.6' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   Bolo Rishikesh — one file, no server, no database.
+   Blue & white flat-vector theme. All icons are inline SVG.
+   ========================================================= */
+:root{
+  --blue:#1d5bd6; --blue-deep:#123f9e; --navy:#0a2463;
+  --sky:#d6e4ff; --sky-2:#b9cffd; --mist:#f1f5ff; --white:#ffffff;
+  --ink:#0a1b3d; --muted:#4b5a7a; --line:#d7e1f5;
+  --flame:#ffb020;  /* used ONLY for diya flames & flowers */
+  --display:"Baloo 2","Mukta",system-ui,sans-serif;
+  --body:"Mukta",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Hebrew",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:var(--body);background:var(--mist);color:var(--ink);font-size:18px;line-height:1.5;min-height:100vh}
+button,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:10px}
+svg{display:block}
+.wrap{max-width:520px;margin:0 auto;padding:12px 16px calc(32px + env(safe-area-inset-bottom))}
+
+/* Top bar */
+header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;font-size:20px;color:var(--navy);cursor:pointer;line-height:1;white-space:nowrap}
+.brand svg{width:34px;height:34px}
+.langs{display:flex;background:var(--white);border:1.5px solid var(--line);border-radius:999px;padding:3px}
+.langs button{border:0;background:transparent;min-width:38px;padding:6px 8px;border-radius:999px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
+.langs button.on{background:var(--blue);color:#fff}
+.view{display:none}
+.view.on{display:block}
+
+/* Hero — the one bold element: a vector Rishikesh scene */
+.hero{background:var(--white);border-radius:28px;overflow:hidden;border:1.5px solid var(--line)}
+.hero .copy{padding:22px 22px 4px}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,8.6vw,40px);line-height:1.06;margin:0 0 8px;color:var(--navy);letter-spacing:-.01em;max-width:14ch}
+.hero p{margin:0;color:var(--muted);max-width:30ch}
+.scene{width:100%;height:auto;margin-top:6px}
+.scene .w1{animation:drift 9s linear infinite}
+.scene .w2{animation:drift 14s linear infinite reverse}
+.scene .diya{animation:bob 4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-60px)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.scene *{animation:none!important}}
+
+/* Home actions */
+.act{display:flex;align-items:center;gap:16px;width:100%;text-align:start;border:0;cursor:pointer}
+.act b{display:block;font-family:var(--display);font-weight:800;line-height:1.1}
+.act span{display:block;font-size:15px}
+.act .ico{flex:none;display:grid;place-items:center;border-radius:50%}
+.act-report{margin-top:14px;background:var(--blue);color:#fff;border-radius:22px;padding:20px;box-shadow:0 6px 0 var(--blue-deep)}
+.act-report b{font-size:27px}
+.act-report span{color:#cfe0ff}
+.act-report .ico{width:64px;height:64px;background:#fff}
+.act-report .ico svg{width:40px;height:40px}
+.act-report:active{transform:translateY(3px);box-shadow:0 3px 0 var(--blue-deep)}
+.act-ganga{margin-top:14px;background:var(--white);color:var(--navy);border-radius:18px;padding:14px 18px;border:1.5px solid var(--line)}
+.act-ganga b{font-size:21px}
+.act-ganga span{color:var(--muted)}
+.act-ganga .ico{width:52px;height:52px;background:var(--sky)}
+.act-ganga .ico svg{width:34px;height:34px}
+.note{font-size:14px;color:var(--muted);text-align:center;margin:20px 10px 0}
+
+/* Report flow */
+.back{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--blue);font-weight:700;padding:6px 0;cursor:pointer;font-size:17px}
+.back svg{width:20px;height:20px}
+[dir=rtl] .back svg{transform:scaleX(-1)}
+h2{font-family:var(--display);font-weight:800;font-size:32px;line-height:1.1;margin:4px 0 6px;color:var(--navy)}
+.step{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:21px;margin:26px 0 12px;color:var(--ink)}
+.step .n{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:17px;font-weight:800;flex:none}
+.panel{background:var(--white);border-radius:18px;padding:16px;border:1.5px solid var(--line)}
+
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat{background:var(--white);border:2px solid var(--line);border-radius:16px;padding:12px;text-align:start;cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.cat .art{background:var(--mist);border-radius:12px;display:grid;place-items:center;padding:8px 0}
+.cat .art svg{width:60px;height:60px}
+.cat .t{font-weight:700;font-size:16px;line-height:1.2}
+.cat.on{border-color:var(--blue);background:var(--sky)}
+.cat.on .art{background:#fff}
+.cat:last-child{grid-column:1/-1;flex-direction:row;align-items:center}
+.cat:last-child .art{padding:4px}
+.cat:last-child .art svg{width:40px;height:40px}
+
+.photoBox{display:flex;flex-direction:column;gap:10px}
+.preview{width:100%;border-radius:12px;display:none}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:14px;padding:15px;font-weight:700;font-size:18px;cursor:pointer;text-decoration:none}
+.btn svg{width:24px;height:24px}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.ghost{background:transparent;color:var(--muted);font-weight:600;padding:6px;text-decoration:underline;text-underline-offset:3px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px 7px 9px;border-radius:999px;background:var(--sky);color:var(--navy);font-size:15px;font-weight:700}
+.chip svg{width:18px;height:18px}
+.chip.warn{background:#fff;border:1.5px dashed var(--sky-2)}
+select{width:100%;padding:13px;border-radius:12px;border:2px solid var(--line);background:#fff;margin-top:10px}
+
+/* Send — ranked */
+.send{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sbtn{display:flex;align-items:center;gap:12px;border:0;border-radius:16px;padding:14px;cursor:pointer;text-align:start}
+.sbtn .i{flex:none;display:grid;place-items:center;border-radius:50%}
+.sbtn .i svg{width:26px;height:26px}
+.sbtn b{display:block;font-size:17px;line-height:1.2}
+.sbtn span{display:block;font-size:13px;line-height:1.3}
+.sbtn.email{grid-column:1/-1;background:var(--blue);color:#fff;padding:18px;box-shadow:0 5px 0 var(--blue-deep)}
+.sbtn.email b{font-family:var(--display);font-weight:800;font-size:23px}
+.sbtn.email span{color:#cfe0ff}
+.sbtn.email .i{width:52px;height:52px;background:#fff}
+.sbtn.email .i svg{width:32px;height:32px}
+.sbtn.email:active{transform:translateY(3px);box-shadow:0 2px 0 var(--blue-deep)}
+.sbtn.share{grid-column:1/-1;background:var(--navy);color:#fff}
+.sbtn.share span{color:#c3d2f2}
+.sbtn.share .i{width:44px;height:44px;background:rgba(255,255,255,.14)}
+.sbtn.x,.sbtn.copy{background:var(--white);color:var(--ink);border:1.5px solid var(--line);flex-direction:column;align-items:flex-start;gap:6px}
+.sbtn.x span,.sbtn.copy span{color:var(--muted)}
+.sbtn.x .i,.sbtn.copy .i{width:40px;height:40px;background:var(--sky)}
+.sbtn.x .i svg,.sbtn.copy .i svg{width:22px;height:22px}
+
+details.msgbox{margin-top:16px}
+details.msgbox summary{cursor:pointer;font-weight:700;color:var(--blue);padding:6px 0;font-size:17px}
+textarea{width:100%;min-height:170px;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-size:15px;line-height:1.45;background:#fbfcff;resize:vertical}
+.hint{font-size:14px;color:var(--muted);margin:6px 2px 0}
+.portals{margin-top:16px}
+.portals b{font-family:var(--display);font-weight:600;font-size:19px;color:var(--navy)}
+.portals a{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);color:var(--navy);font-weight:700;text-decoration:none}
+.portals a:last-child{border-bottom:0}
+.portals a svg{width:22px;height:22px;color:var(--blue);flex:none}
+.portals a .chev{margin-inline-start:auto;width:18px;height:18px;color:var(--muted)}
+[dir=rtl] .portals a .chev{transform:scaleX(-1)}
+.btn.soft{background:var(--sky);color:var(--navy)}
+.privacy{font-size:14px;color:var(--muted);text-align:center;margin-top:18px}
+.hidden{display:none!important}
+
+/* Respect Ganga */
+.gcard{border-radius:26px;overflow:hidden;background:var(--white);border:1.5px solid var(--line);min-height:380px;display:flex;flex-direction:column}
+.gcard .art{background:var(--sky)}
+.gcard .art svg{width:100%;height:auto}
+.gcard .txt{padding:18px 22px 24px}
+.gcard h3{font-family:var(--display);font-weight:800;margin:0 0 8px;font-size:27px;line-height:1.1;color:var(--navy)}
+.gcard p{margin:0;font-size:19px;color:#25365a}
+.dots{display:flex;justify-content:center;gap:7px;margin:16px 0}
+.dots i{width:9px;height:9px;border-radius:9px;background:var(--line)}
+.dots i.on{background:var(--blue);width:26px}
+.nav2{display:flex;gap:10px}
+.nav2 .btn{flex:1}
+.btn.big{font-family:var(--display);font-weight:800;font-size:20px;background:var(--navy);color:#fff}
+#pledgeImg{width:100%;border-radius:18px;margin-top:14px;display:none}
+
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(120px);background:var(--navy);color:#fff;padding:12px 18px;border-radius:14px;font-size:16px;max-width:90vw;text-align:center;transition:transform .25s,opacity .25s;opacity:0;z-index:9}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand" onclick="go('home')" role="link" tabindex="0"><span data-icon="logo"></span><span id="brandName"></span></div>
+    <div class="langs" id="langs"></div>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <section class="view" id="v-home">
+    <div class="hero">
+      <div class="copy">
+        <h1 data-t="tagline"></h1>
+        <p data-t="heroSub"></p>
+      </div>
+      <!-- Vector scene: hills, temple, suspension bridge, the Ganga, a floating diya -->
+      <svg class="scene" viewBox="0 0 360 200" aria-hidden="true">
+        <defs><clipPath id="riverClip"><rect x="0" y="150" width="360" height="50"/></clipPath></defs>
+        <circle cx="292" cy="42" r="20" fill="#d6e4ff"/>
+        <path d="M268 30l5 3M312 30l-5 3" stroke="#fff" stroke-width="0"/>
+        <path d="M60 38l5 4 5-4M84 28l4 3 4-3" stroke="#0a2463" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M0 110 L46 62 L80 92 L128 44 L176 96 L214 70 L262 108 L306 66 L360 104 V160 H0Z" fill="#d6e4ff"/>
+        <path d="M128 44 L144 61 L136 59 L128 66 L120 58 L113 60Z M306 66 L320 80 L313 79 L306 85 L300 79 L294 80Z" fill="#fff"/>
+        <path d="M0 132 C40 110 80 118 120 126 C170 136 210 112 260 118 C300 122 330 112 360 116 V160 H0Z" fill="#b9cffd"/>
+        <!-- temple -->
+        <g transform="translate(26 86)">
+          <path d="M18 0 V-10" stroke="#0a2463" stroke-width="2"/>
+          <path d="M18 -10 L28 -7 L18 -4Z" fill="#1d5bd6"/>
+          <path d="M18 0 C10 8 8 16 8 22 H28 C28 16 26 8 18 0Z" fill="#1d5bd6" stroke="#0a2463" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M4 22 H32 V58 H4Z" fill="#fff" stroke="#0a2463" stroke-width="2"/>
+          <path d="M13 58 V44 a5 5 0 0 1 10 0 V58" fill="#d6e4ff" stroke="#0a2463" stroke-width="2"/>
+          <path d="M4 30 H32" stroke="#0a2463" stroke-width="2"/>
+        </g>
+        <!-- suspension bridge -->
+        <g stroke="#0a2463" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M112 146 V92 M124 146 V92 M112 100 H124 M112 92 H124"/>
+          <path d="M296 146 V92 M308 146 V92 M296 100 H308 M296 92 H308"/>
+          <path d="M66 140 Q90 120 118 92 Q210 150 302 92 Q326 118 350 140"/>
+          <path d="M100 140 H330" stroke-width="4"/>
+          <g stroke-width="1.6"><path d="M140 140V106M160 140V117M180 140V124M200 140V127M220 140V127M240 140V124M260 140V117M280 140V106M88 140V114M100 140V105M318 140V106M332 140V118"/></g>
+        </g>
+        <!-- river -->
+        <rect x="0" y="150" width="360" height="50" fill="#1d5bd6"/>
+        <g clip-path="url(#riverClip)" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round">
+          <path class="w1" d="M0 166 c15 0 15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6"/>
+          <path class="w2" d="M-60 184 c15 0 15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6 s15 -6 30 -6 s15 6 30 6" opacity=".55"/>
+        </g>
+        <!-- diya on leaf -->
+        <g transform="translate(196 156)"><g class="diya">
+          <path d="M-22 10 C-12 20 12 20 22 10 C10 14 -10 14 -22 10Z" fill="#b9cffd" stroke="#0a2463" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M-10 10 C-10 4 10 4 10 10Z" fill="#fff" stroke="#0a2463" stroke-width="2"/>
+          <path d="M0 4 C-5 -2 -2 -8 0 -12 C2 -8 5 -2 0 4Z" fill="#ffb020" stroke="#0a2463" stroke-width="1.6"/>
+        </g></g>
+      </svg>
+    </div>
+    <button class="act act-report" onclick="go('report')">
+      <div class="ico" data-icon="megaphone"></div><div><b data-t="reportBtn"></b><span data-t="reportSub"></span></div>
+    </button>
+    <button class="act act-ganga" onclick="go('ganga')">
+      <div class="ico" data-icon="diya"></div><div><b data-t="gangaBtn"></b><span data-t="gangaSub"></span></div>
+    </button>
+    <p class="note" data-t="privacy"></p>
+  </section>
+
+  <!-- ============ REPORT ============ -->
+  <section class="view" id="v-report">
+    <button class="back" onclick="go('home')"><span data-icon="arrow"></span><span data-t="back"></span></button>
+    <h2 data-t="chooseIssue"></h2>
+
+    <h3 class="step"><span class="n">1</span><span data-t="s1"></span></h3>
+    <div class="cats" id="cats"></div>
+
+    <div id="afterCat" class="hidden">
+      <h3 class="step"><span class="n">2</span><span data-t="s2"></span></h3>
+      <div class="panel photoBox">
+        <img id="preview" class="preview" alt="">
+        <label class="btn primary" for="cam"><span data-icon="camera"></span><span id="camLabel"></span></label>
+        <input id="cam" type="file" accept="image/*" capture="environment" hidden>
+        <button class="btn ghost" id="skipBtn" onclick="skipPhoto()" data-t="skip"></button>
+        <div>
+          <span class="chip" id="locChip"></span>
+          <select id="areaSel" class="hidden" onchange="pickArea(this.value)"></select>
+        </div>
+      </div>
+    </div>
+
+    <div id="sendBlock" class="hidden">
+      <h3 class="step"><span class="n">3</span><span data-t="s3"></span></h3>
+      <div class="send">
+        <button class="sbtn email" onclick="sendEmail()"><div class="i" data-icon="mail"></div><div><b data-t="email"></b><span data-t="emailSub"></span></div></button>
+        <button class="sbtn share" onclick="sendShare()"><div class="i" data-icon="chat"></div><div><b data-t="share"></b><span data-t="shareSub"></span></div></button>
+        <button class="sbtn x" onclick="sendX()"><div class="i" data-icon="x"></div><b data-t="x"></b><span data-t="xSub"></span></button>
+        <button class="sbtn copy" onclick="copyText()"><div class="i" data-icon="copy"></div><b data-t="copy"></b><span data-t="copySub"></span></button>
+      </div>
+
+      <details class="msgbox">
+        <summary data-t="ready"></summary>
+        <textarea id="msg" aria-label="Complaint text"></textarea>
+        <p class="hint" data-t="edit"></p>
+      </details>
+
+      <div class="panel portals" id="portals"></div>
+      <button class="btn soft" style="margin-top:14px" onclick="resetReport()" data-t="newReport"></button>
+    </div>
+    <p class="privacy" data-t="privacy"></p>
+  </section>
+
+  <!-- ============ RESPECT GANGA ============ -->
+  <section class="view" id="v-ganga">
+    <button class="back" onclick="go('home')"><span data-icon="arrow"></span><span data-t="back"></span></button>
+    <div id="gcard" class="gcard"></div>
+    <div class="dots" id="dots"></div>
+    <div class="nav2">
+      <button class="btn soft" id="prevBtn" onclick="card(-1)" data-t="prev"></button>
+      <button class="btn primary" id="nextBtn" onclick="card(1)" data-t="next"></button>
+    </div>
+    <button class="btn big hidden" id="pledgeBtn" style="margin-top:12px" onclick="makePledge()"><span data-icon="diyaWhite"></span><span data-t="pledge"></span></button>
+    <img id="pledgeImg" alt="">
+    <button class="btn primary hidden" id="pledgeShare" style="margin-top:10px" onclick="sharePledge()" data-t="pledgeShare"></button>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   CONFIG — the only part you normally need to edit.
+   Change something here, commit on GitHub, and it's live.
+   ========================================================= */
+const CONFIG = {
+  // App name per language (change it when you pick the final name)
+  appName: {en:"Bolo Rishikesh", hi:"बोलो ऋषिकेश", ru:"Боло Ришикеш", he:"בולו רישיקש"},
+
+  // Who receives the email for each issue. "all" is added to every category.
+  emails: {
+    all:      ["npprishikesh@gmail.com",   // Nagar Nigam Rishikesh — VERIFY (third-party directory)
+               "cm-helpline@uk.gov.in"],   // Uttarakhand CM Helpline (official)
+    garbage: [], cattle: [], plastic: [], urination: [], food: [], sewage: [], other: []
+  },
+
+  // Accounts tagged in the public X post.
+  xHandles: [
+    "@ukcmo",          // Uttarakhand Chief Minister's Office (confirmed)
+    "@pushkardhami",   // CM Pushkar Singh Dhami (confirmed)
+    "@BJP4UK",         // BJP Uttarakhand — VERIFY on X before going live
+    // "@HANDLE_HERE", // Rishikesh MLA — add the verified handle here
+  ],
+  hashtags: ["#BoloRishikesh", "#Rishikesh", "#NamamiGange"],
+
+  cmHelplineTel: "1905",
+  cmPortal: "https://cmhelpline.uk.gov.in/",
+  nagarNigamTel: "+919084520350",           // VERIFY (third-party directory)
+  nagarNigamSite: "https://nnrishikesh.uk.gov.in/"
+};
+
+/* ---------------- Custom vector icons ----------------
+   48×48 duotone: navy outline, blue / sky / white fills.  */
+const N="#0a2463", B="#1d5bd6", K="#d6e4ff", K2="#b9cffd", W="#fff", F="#ffb020";
+const st = `stroke="${N}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"`;
+const wave = (y,c=B) => `<path d="M4 ${y}c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/>`;
+const ICON = {
+  logo:`<svg viewBox="0 0 48 48"><path d="M24 3C12.4 3 3 10.8 3 20.5c0 5.3 2.8 10 7.2 13.2L8.5 44l10.3-6.3c1.7.4 3.4.6 5.2.6 11.6 0 21-7.8 21-17.8S35.6 3 24 3z" fill="${B}"/><path d="M12 19l6-7 4.5 4.5L27 11l9 8" fill="none" stroke="${W}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 27c3.5 0 3.5-2.6 7-2.6s3.5 2.6 7 2.6 3.5-2.6 7-2.6 3.5 2.6 7 2.6" fill="none" stroke="${W}" stroke-width="3" stroke-linecap="round"/></svg>`,
+
+  garbage:`<svg viewBox="0 0 48 48"><path d="M17 12l2-6 6 3" fill="${W}" ${st}/><circle cx="31" cy="8" r="3.5" fill="${K}" ${st}/><path d="M10 15h28v4H10z" fill="${B}" ${st}/><path d="M12 19h24l-2.4 21.5a3 3 0 0 1-3 2.5H17.4a3 3 0 0 1-3-2.5z" fill="${K}" ${st}/><path d="M20 25v12M28 25v12" fill="none" ${st}/><path d="M40 40l3-2M41 45h4" fill="none" ${st}/></svg>`,
+
+  cattle:`<svg viewBox="0 0 48 48"><path d="M13 13c-3-1-5-4-5-8 3 1 6 3 8 5M33 13c3-1 5-4 5-8-3 1-6 3-8 5" fill="${K}" ${st}/><path d="M12 18c-3 0-6-1-7-3 2-1.5 5-1.5 7-.5M34 18c3 0 6-1 7-3-2-1.5-5-1.5-7-.5" fill="${W}" ${st}/><path d="M12 16c0-4 5-7 11-7s11 3 11 7v10c0 6-5 11-11 11s-11-5-11-11z" fill="${W}" ${st}/><path d="M26 10c1 3 4 5 8 5v-1c0-2-1.5-3.5-3.5-4.3" fill="${B}"/><ellipse cx="23" cy="31" rx="7.5" ry="5.5" fill="${K}" ${st}/><circle cx="20.5" cy="31" r="1.2" fill="${N}"/><circle cx="25.5" cy="31" r="1.2" fill="${N}"/><circle cx="18.5" cy="21" r="1.6" fill="${N}"/><circle cx="27.5" cy="21" r="1.6" fill="${N}"/><path d="M35 44h10c0-2-1.6-3.2-3.2-3.2 0-1.8-1.3-3-2.9-3s-2.9 1.4-2.9 3c-.8.4-1 1.6-1 3.2z" fill="${B}" ${st}/></svg>`,
+
+  plastic:`<svg viewBox="0 0 48 48"><path d="M27 11l4-8h5" fill="none" ${st}/><path d="M15 11h18l-2.6 23H17.6z" fill="${W}" ${st}/><path d="M14 11h20" ${st}/><path d="M16.3 18h15.4" ${st}/><circle cx="37" cy="24" r="1.6" fill="${B}"/><circle cx="11" cy="28" r="1.3" fill="${B}"/>${wave(38)}${wave(44,K2)}</svg>`,
+
+  urination:`<svg viewBox="0 0 48 48"><rect x="9" y="6" width="13" height="14" rx="2.5" fill="${K}" ${st}/><path d="M7 21h26c0 7-4.5 11-10.5 11H20l1 9H11l1-9.5C9 29 7 26 7 21z" fill="${W}" ${st}/><path d="M12 25h16" fill="none" stroke="${K2}" stroke-width="2.4" stroke-linecap="round"/><circle cx="37" cy="13" r="8" fill="${B}" ${st}/><path d="M37 9v5" stroke="${W}" stroke-width="2.6" stroke-linecap="round"/><circle cx="37" cy="17.2" r="1.4" fill="${W}"/><path d="M30 44h14" ${st}/></svg>`,
+
+  food:`<svg viewBox="0 0 48 48"><path d="M7 15l3-7h28l3 7z" fill="${B}" ${st}/><path d="M7 15c0 2.2 1.8 4 4.2 4s4.1-1.8 4.1-4c0 2.2 1.9 4 4.2 4s4.2-1.8 4.2-4c0 2.2 1.8 4 4.1 4s4.2-1.8 4.2-4c0 2.2 1.9 4 4.2 4S41 17.2 41 15" fill="${W}" ${st}/><path d="M11 19v11M37 19v11" ${st}/><path d="M18 30c0-3.3 2.7-6 6-6s6 2.7 6 6" fill="${K}" ${st}/><rect x="7" y="30" width="34" height="8" rx="2" fill="${K}" ${st}/><circle cx="14" cy="41.5" r="3" fill="${W}" ${st}/><circle cx="34" cy="41.5" r="3" fill="${W}" ${st}/><path d="M19 21.5c1-1.8 3-1.8 3 0M26 20.5c1-1.8 3-1.8 3 0" fill="none" stroke="${N}" stroke-width="1.8" stroke-linecap="round"/><circle cx="20.5" cy="22.3" r="1.3" fill="${N}"/><circle cx="27.5" cy="21.3" r="1.3" fill="${N}"/></svg>`,
+
+  sewage:`<svg viewBox="0 0 48 48"><rect x="3" y="6" width="9" height="26" fill="${K}" ${st}/><path d="M5 12h5M5 19h5M5 26h5" stroke="${K2}" stroke-width="2"/><rect x="12" y="12" width="13" height="9" rx="1.5" fill="${W}" ${st}/><rect x="24" y="10" width="4.5" height="13" rx="1.5" fill="${K}" ${st}/><path d="M28.5 16.5c6 0 8.5 5 8.5 14" fill="none" stroke="#5a6b8f" stroke-width="5" stroke-linecap="round"/><circle cx="31" cy="34" r="1.8" fill="#5a6b8f"/><circle cx="42" cy="32" r="1.5" fill="#5a6b8f"/>${wave(38)}${wave(44,K2)}</svg>`,
+
+  other:`<svg viewBox="0 0 48 48"><path d="M8 8h32a3 3 0 0 1 3 3v19a3 3 0 0 1-3 3H22l-8 7v-7H8a3 3 0 0 1-3-3V11a3 3 0 0 1 3-3z" fill="${W}" ${st}/><path d="M24 14v12M18 20h12" stroke="${B}" stroke-width="3.2" stroke-linecap="round"/></svg>`,
+
+  megaphone:`<svg viewBox="0 0 48 48"><path d="M8 20h7l17-9v26l-17-9H8z" fill="${K}" ${st}/><path d="M15 20v8" ${st}/><path d="M12 28l3 10h5l-2-10" fill="${W}" ${st}/><path d="M37 18c2 1.5 3 3.6 3 6s-1 4.5-3 6M40 13c3.5 2.8 5 6.6 5 11s-1.5 8.2-5 11" fill="none" stroke="${B}" stroke-width="2.8" stroke-linecap="round"/></svg>`,
+
+  diya:`<svg viewBox="0 0 48 48"><path d="M24 22c-6-6-3-13 0-17 3 4 6 11 0 17z" fill="${F}" ${st}/><path d="M24 19c-2-2-1.5-5 0-7 1.5 2 2 5 0 7z" fill="${W}"/><path d="M6 28c4 9 32 9 36 0z" fill="${B}" ${st}/><path d="M6 28h36" ${st}/><path d="M14 36c3 5 17 5 20 0" fill="none" ${st}/><path d="M4 43c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3" fill="none" stroke="${K2}" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  diyaWhite:`<svg viewBox="0 0 48 48"><path d="M24 22c-6-6-3-13 0-17 3 4 6 11 0 17z" fill="${F}" stroke="${W}" stroke-width="2.4" stroke-linejoin="round"/><path d="M6 28c4 9 32 9 36 0z" fill="none" stroke="${W}" stroke-width="2.8" stroke-linejoin="round"/></svg>`,
+
+  mail:`<svg viewBox="0 0 48 48"><rect x="5" y="11" width="38" height="27" rx="4" fill="${K}" ${st}/><path d="M6 13l18 14 18-14" fill="${W}" ${st}/><circle cx="38" cy="12" r="7" fill="${B}" ${st}/><path d="M35 12h6M38.5 9.5 41 12l-2.5 2.5" fill="none" stroke="${W}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  chat:`<svg viewBox="0 0 48 48"><path d="M24 6C13.5 6 6 13 6 22c0 4 1.5 7.6 4 10.4L8 42l9.4-4.4c2 .8 4.3 1.2 6.6 1.2 10.5 0 18-7 18-16S34.5 6 24 6z" fill="${W}" stroke="${W}" stroke-width="0"/><rect x="14" y="16" width="20" height="14" rx="2.5" fill="${K}" stroke="${N}" stroke-width="2.2"/><circle cx="20" cy="21" r="2" fill="${B}"/><path d="M15 29l6-5 4 3 4-4 5 5" fill="none" stroke="${N}" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+  x:`<svg viewBox="0 0 24 24"><path d="M4 4h4.5l11.5 16h-4.5z" fill="none" stroke="${N}" stroke-width="2" stroke-linejoin="round"/><path d="M19.5 4L13.6 10.6M10.4 13.4L4.5 20" stroke="${N}" stroke-width="2" stroke-linecap="round"/></svg>`,
+  copy:`<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2" fill="${W}" stroke="${N}" stroke-width="2"/><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2" fill="none" stroke="${N}" stroke-width="2"/><path d="M11 13h6M11 16.5h4" stroke="${B}" stroke-width="2" stroke-linecap="round"/></svg>`,
+  camera:`<svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h2.5l1.5-2h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  pin:`<svg viewBox="0 0 24 24"><path d="M12 22s7-6.4 7-12a7 7 0 0 0-14 0c0 5.6 7 12 7 12z" fill="${B}"/><circle cx="12" cy="10" r="2.6" fill="${W}"/></svg>`,
+  pinOff:`<svg viewBox="0 0 24 24"><path d="M12 22s7-6.4 7-12a7 7 0 0 0-14 0c0 5.6 7 12 7 12z" fill="none" stroke="${N}" stroke-width="2"/><circle cx="12" cy="10" r="2.4" fill="${N}"/></svg>`,
+  phone:`<svg viewBox="0 0 24 24"><path d="M5 3h3.5l1.5 5-2.2 1.4a11 11 0 0 0 6.8 6.8L16 14l5 1.5V19a2 2 0 0 1-2 2C10.7 21 3 13.3 3 5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  globe:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  chev:`<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  arrow:`<svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+};
+
+/* Illustrations for the Respect Ganga cards (200×120) */
+const sw = `stroke="${N}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"`;
+const river = (y) => `<rect x="0" y="${y}" width="200" height="${120-y}" fill="${B}"/><path d="M0 ${y+12}c10 0 10-5 20-5s10 5 20 5 10-5 20-5 10 5 20 5 10-5 20-5 10 5 20 5 10-5 20-5 10 5 20 5 10-5 20-5 10 5 20 5" fill="none" stroke="${W}" stroke-width="2.6" stroke-linecap="round"/>`;
+const slash = (cx,cy,r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${N}" stroke-width="6"/><path d="M${cx-r*.7} ${cy-r*.7}L${cx+r*.7} ${cy+r*.7}" stroke="${N}" stroke-width="6" stroke-linecap="round"/>`;
+const ART = [
+ // 1. Maa Ganga — temple, river, diyas
+ `<svg viewBox="0 0 200 120"><path d="M0 70 L40 34 L70 58 L110 22 L150 60 L176 40 L200 56 V90 H0Z" fill="${K2}"/><path d="M110 22l12 13-6-1-6 5-6-5-6 1z" fill="${W}"/><g transform="translate(24 46)"><path d="M18 0V-8" ${sw}/><path d="M18-8l9 3-9 3z" fill="${B}"/><path d="M18 0C10 8 8 15 8 20h20c0-5-2-12-10-20z" fill="${B}" ${sw}/><path d="M4 20h28v26H4z" fill="${W}" ${sw}/><path d="M13 46V36a5 5 0 0 1 10 0v10" fill="${K}" ${sw}/></g>${river(88)}<g transform="translate(120 96)"><path d="M-14 6c6 7 22 7 28 0z" fill="${K2}" ${sw}/><path d="M0 2c-4-4-2-9 0-12 2 3 4 8 0 12z" fill="${F}" ${sw}/></g><g transform="translate(160 104) scale(.7)"><path d="M-14 6c6 7 22 7 28 0z" fill="${K2}" ${sw}/><path d="M0 2c-4-4-2-9 0-12 2 3 4 8 0 12z" fill="${F}" ${sw}/></g></svg>`,
+ // 2. No plastic cups — crossed cup, reusable bottle
+ `<svg viewBox="0 0 200 120">${river(96)}<g transform="translate(46 18)"><path d="M18 4l5-10h7" fill="none" ${sw}/><path d="M2 4h30l-4 44H6z" fill="${W}" ${sw}/><path d="M4 16h26" ${sw}/></g>${slash(63,44,34)}<g transform="translate(128 10)"><path d="M14 0h16v8l6 8v60a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6V16l6-8z" fill="${K}" ${sw}/><path d="M12 -6h20v8H12z" fill="${B}" ${sw}/><path d="M8 34h28v20H8z" fill="${W}" ${sw}/><path d="M16 44c3-4 9-4 12 0" fill="none" stroke="${B}" stroke-width="3" stroke-linecap="round"/></g><path d="M100 46l10 0M104 40l6 6-6 6" fill="none" stroke="${B}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+ // 3. Leaf dona with flowers & diya on the river
+ `<svg viewBox="0 0 200 120">${river(78)}<g transform="translate(100 74)"><path d="M-58 4C-40 30 40 30 58 4C30 14 -30 14 -58 4z" fill="${K2}" ${sw}/><path d="M-50 6C-30 16 30 16 50 6" fill="none" stroke="${N}" stroke-width="2"/><g fill="${F}" ${sw}><circle cx="-30" cy="0" r="9"/><circle cx="30" cy="0" r="9"/><circle cx="-16" cy="-6" r="7"/><circle cx="16" cy="-6" r="7"/></g><path d="M-10 4c0-8 20-8 20 0z" fill="${W}" ${sw}/><path d="M0-2c-6-6-3-14 0-18 3 4 6 12 0 18z" fill="${F}" ${sw}/></g></svg>`,
+ // 4. No soap in the river
+ `<svg viewBox="0 0 200 120">${river(74)}<g transform="translate(100 46)"><rect x="-34" y="-20" width="68" height="40" rx="12" fill="${W}" ${sw}/><path d="M-20 -6h40" stroke="${K2}" stroke-width="5" stroke-linecap="round"/><circle cx="40" cy="-26" r="8" fill="${W}" ${sw}/><circle cx="54" cy="-12" r="5" fill="${W}" ${sw}/><circle cx="-44" cy="-22" r="6" fill="${W}" ${sw}/></g>${slash(100,46,46)}</svg>`,
+ // 5. Bin it — bin, bag into bin, cow safe
+ `<svg viewBox="0 0 200 120"><path d="M0 100H200" stroke="${N}" stroke-width="3"/><g transform="translate(30 30)"><path d="M0 10h40v6H0z" fill="${B}" ${sw}/><path d="M3 16h34l-3 50H6z" fill="${K}" ${sw}/><path d="M14 26v30M26 26v30" ${sw}/></g><g transform="translate(94 34)"><path d="M0 10h22l3 26H-3z" fill="${W}" ${sw}/><path d="M5 10c0-8 5-8 5 0M12 10c0-8 5-8 5 0" fill="none" ${sw}/></g><path d="M88 52H74M80 46l-6 6 6 6" fill="none" stroke="${B}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(134 44)"><path d="M6 8c-4-1-6-4-6-8 3 1 6 3 8 5M42 8c4-1 6-4 6-8-3 1-6 3-8 5" fill="${K}" ${sw}/><path d="M8 12c0-6 7-10 16-10s16 4 16 10v14c0 9-7 16-16 16S8 35 8 26z" fill="${W}" ${sw}/><ellipse cx="24" cy="34" rx="10" ry="7" fill="${K}" ${sw}/><circle cx="18" cy="18" r="2.2" fill="${N}"/><circle cx="30" cy="18" r="2.2" fill="${N}"/></g></svg>`
+];
+
+/* Known places (approximate) — to say "near Triveni Ghat" and as fallback list */
+const PLACES = [
+  {id:"triveni",  en:"Triveni Ghat",         hi:"त्रिवेणी घाट",        lat:30.1035, lng:78.2975},
+  {id:"ramjhula", en:"Ram Jhula",            hi:"राम झूला",            lat:30.1236, lng:78.3150},
+  {id:"parmarth", en:"Parmarth Niketan Ghat",hi:"परमार्थ निकेतन घाट",  lat:30.1222, lng:78.3150},
+  {id:"swarg",    en:"Swarg Ashram",         hi:"स्वर्ग आश्रम",          lat:30.1215, lng:78.3185},
+  {id:"janki",    en:"Janki Setu",           hi:"जानकी सेतु",           lat:30.1190, lng:78.3195},
+  {id:"munikireti",en:"Muni Ki Reti",        hi:"मुनि की रेती",          lat:30.1180, lng:78.3105},
+  {id:"laxman",   en:"Laxman Jhula",         hi:"लक्ष्मण झूला",          lat:30.1268, lng:78.3300},
+  {id:"tapovan",  en:"Tapovan",              hi:"तपोवन",               lat:30.1310, lng:78.3240},
+  {id:"busstand", en:"Rishikesh Bus Stand",  hi:"ऋषिकेश बस अड्डा",      lat:30.1000, lng:78.2895},
+  {id:"market",   en:"Rishikesh Main Market",hi:"ऋषिकेश मुख्य बाज़ार",   lat:30.1055, lng:78.2950},
+  {id:"otherplace",en:"Other place in Rishikesh",hi:"ऋषिकेश में अन्य स्थान", lat:null, lng:null}
+];
+
+const CATS = [
+  {id:"garbage",   en:"Garbage dumping", hi:"कूड़े का ढेर", ru:"Мусор", he:"זבל ופסולת",
+   dEn:"garbage has been dumped in the open and is not being cleared",
+   dHi:"खुले में कूड़ा फेंका गया है और उसकी सफाई नहीं हो रही है"},
+  {id:"cattle",    en:"Stray cattle / dung on road", hi:"आवारा पशु / सड़क पर गोबर", ru:"Бродячий скот / навоз", he:"בקר משוטט / גללים",
+   dEn:"stray cattle are roaming on the road and dung is lying on the road and footpath, making it unsafe and unhygienic for pedestrians",
+   dHi:"सड़क पर आवारा पशु घूम रहे हैं और सड़क व फुटपाथ पर गोबर पड़ा है, जिससे पैदल चलने वालों के लिए असुरक्षित और गंदगी की स्थिति है"},
+  {id:"plastic",   en:"Plastic at Ganga ghat", hi:"गंगा घाट पर प्लास्टिक", ru:"Пластик на гхате", he:"פלסטיק בגאט",
+   dEn:"single-use plastic (cups, bags, bottles) is being sold and littered at the Ganga ghat, polluting the river",
+   dHi:"गंगा घाट पर सिंगल-यूज़ प्लास्टिक (कप, थैलियाँ, बोतलें) बेची और फेंकी जा रही है, जिससे नदी प्रदूषित हो रही है"},
+  {id:"urination", en:"Open urination / no toilet", hi:"खुले में पेशाब / शौचालय नहीं", ru:"Нет туалета / антисанитария", he:"אין שירותים / הטלת שתן",
+   dEn:"people are urinating or defecating in the open here; a clean, working public toilet and regular cleaning are needed",
+   dHi:"यहाँ लोग खुले में पेशाब या शौच कर रहे हैं; साफ़ और चालू सार्वजनिक शौचालय तथा नियमित सफाई की आवश्यकता है"},
+  {id:"food",      en:"Unhygienic food stall", hi:"गंदगी में खाने का ठेला", ru:"Антисанитарная еда", he:"דוכן אוכל לא היגייני",
+   dEn:"food is being prepared and sold in unhygienic conditions, which is a risk to public health",
+   dHi:"यहाँ अस्वच्छ परिस्थितियों में खाना बनाया और बेचा जा रहा है, जो जन स्वास्थ्य के लिए खतरा है"},
+  {id:"sewage",    en:"Sewage / drain into Ganga", hi:"गंगा में गंदा नाला", ru:"Сточные воды в Ганг", he:"ביוב לגנגה",
+   dEn:"sewage or drain water is flowing directly into the Ganga",
+   dHi:"गंदा नाला या सीवर का पानी सीधे गंगा में बह रहा है"},
+  {id:"other",     en:"Other problem", hi:"अन्य समस्या", ru:"Другое", he:"אחר",
+   dEn:"there is a cleanliness problem that needs attention",
+   dHi:"यहाँ स्वच्छता की समस्या है जिस पर ध्यान देने की आवश्यकता है"}
+];
+
+/* ---------------- UI text in 4 languages ---------------- */
+const T = {
+ en:{tagline:"Keep Rishikesh & Maa Ganga clean",heroSub:"Seen garbage, plastic or sewage? Report it to the officials in three taps.",
+  reportBtn:"Report a problem",reportSub:"Takes about 30 seconds",gangaBtn:"Respect Ganga",gangaSub:"1-minute guide for visitors",
+  privacy:"Nothing is stored on any server. Your complaint is sent from your own phone, in your name.",back:"Back",
+  chooseIssue:"Report a problem",s1:"What did you see?",s2:"Add a photo",s3:"Send to officials",
+  takePhoto:"Take photo",retake:"Retake photo",skip:"Skip photo",
+  locGetting:"Finding your location…",locFail:"Location is off. Pick your area:",pickArea:"Pick your area",
+  email:"Email officials",emailSub:"Nagar Nigam + CM Helpline, all filled in",share:"Share with photo",shareSub:"WhatsApp, Gmail, Telegram…",
+  x:"Post on X",xSub:"Photo + officials tagged",copy:"Copy complaint",copySub:"Paste it anywhere",
+  ready:"See or edit the complaint text",edit:"You can edit it, but you don't have to.",newReport:"Report another problem",
+  copied:"Copied",photoSaved:"Photo saved. Tap the paperclip in your email to attach it.",noShare:"Sharing isn't supported here. Opening WhatsApp.",
+  pickX:"Choose X in the list. Your photo and the tags are included.",photoSavedX:"Photo saved. Add it to your post from your gallery.",
+  portalsTitle:"Prefer to call or use a portal?",callCM:"Call CM Helpline 1905",cmPortal:"CM Helpline portal",callNN:"Call Nagar Nigam",nnSite:"Nagar Nigam website",
+  prev:"Previous",next:"Next",pledge:"Take the Ganga pledge",pledgeShare:"Share my pledge",pledgeDone:"Your pledge is ready to share"},
+ hi:{tagline:"ऋषिकेश और माँ गंगा को स्वच्छ रखें",heroSub:"कचरा, प्लास्टिक या गंदा नाला दिखा? तीन टैप में अधिकारियों तक शिकायत पहुँचाएँ।",
+  reportBtn:"समस्या की शिकायत करें",reportSub:"लगभग 30 सेकंड",gangaBtn:"गंगा का सम्मान",gangaSub:"यात्रियों के लिए 1 मिनट की गाइड",
+  privacy:"कोई भी जानकारी सर्वर पर सेव नहीं होती। शिकायत आपके अपने फ़ोन से, आपके नाम से जाती है।",back:"वापस",
+  chooseIssue:"समस्या की शिकायत करें",s1:"आपने क्या देखा?",s2:"फ़ोटो जोड़ें",s3:"अधिकारियों को भेजें",
+  takePhoto:"फ़ोटो लें",retake:"दोबारा फ़ोटो लें",skip:"फ़ोटो छोड़ें",
+  locGetting:"आपकी लोकेशन ढूँढी जा रही है…",locFail:"लोकेशन बंद है। अपना क्षेत्र चुनें:",pickArea:"अपना क्षेत्र चुनें",
+  email:"अधिकारियों को ईमेल करें",emailSub:"नगर निगम + सीएम हेल्पलाइन, सब पहले से भरा",share:"फ़ोटो के साथ शेयर करें",shareSub:"WhatsApp, Gmail, Telegram…",
+  x:"X पर पोस्ट करें",xSub:"फ़ोटो + अधिकारी टैग",copy:"शिकायत कॉपी करें",copySub:"कहीं भी पेस्ट करें",
+  ready:"शिकायत का टेक्स्ट देखें या बदलें",edit:"आप चाहें तो बदल सकते हैं, ज़रूरी नहीं।",newReport:"एक और शिकायत करें",
+  copied:"कॉपी हो गया",photoSaved:"फ़ोटो सेव हो गई। ईमेल में पेपरक्लिप दबाकर जोड़ें।",noShare:"यहाँ शेयर उपलब्ध नहीं। WhatsApp खोला जा रहा है।",
+  pickX:"सूची में X चुनें। फ़ोटो और टैग साथ में जाएँगे।",photoSavedX:"फ़ोटो सेव हो गई। गैलरी से पोस्ट में जोड़ें।",
+  portalsTitle:"कॉल या पोर्टल से शिकायत करना चाहते हैं?",callCM:"सीएम हेल्पलाइन 1905 पर कॉल करें",cmPortal:"सीएम हेल्पलाइन पोर्टल",callNN:"नगर निगम को कॉल करें",nnSite:"नगर निगम वेबसाइट",
+  prev:"पिछला",next:"अगला",pledge:"गंगा संकल्प लें",pledgeShare:"मेरा संकल्प शेयर करें",pledgeDone:"आपका संकल्प शेयर के लिए तैयार है"},
+ ru:{tagline:"Сохраним Ришикеш и Мать Гангу чистыми",heroSub:"Видите мусор, пластик или стоки? Сообщите властям в три касания.",
+  reportBtn:"Сообщить о проблеме",reportSub:"Около 30 секунд",gangaBtn:"Уважайте Гангу",gangaSub:"Гид на 1 минуту для гостей",
+  privacy:"Ничего не хранится на сервере. Жалоба отправляется с вашего телефона, от вашего имени.",back:"Назад",
+  chooseIssue:"Сообщить о проблеме",s1:"Что вы увидели?",s2:"Добавьте фото",s3:"Отправить властям",
+  takePhoto:"Сделать фото",retake:"Переснять",skip:"Без фото",
+  locGetting:"Определяем место…",locFail:"Геолокация выключена. Выберите район:",pickArea:"Выберите район",
+  email:"Написать властям",emailSub:"Муниципалитет + горячая линия, всё заполнено",share:"Отправить с фото",shareSub:"WhatsApp, Gmail, Telegram…",
+  x:"Пост в X",xSub:"Фото + отметки чиновников",copy:"Скопировать жалобу",copySub:"Вставьте куда угодно",
+  ready:"Посмотреть или изменить текст",edit:"Можно отредактировать, но не обязательно.",newReport:"Сообщить ещё",
+  copied:"Скопировано",photoSaved:"Фото сохранено. Прикрепите его через скрепку в письме.",noShare:"Отправка не поддерживается. Открываем WhatsApp.",
+  pickX:"Выберите X в списке. Фото и отметки уже добавлены.",photoSavedX:"Фото сохранено. Добавьте его в пост из галереи.",
+  portalsTitle:"Хотите позвонить или использовать портал?",callCM:"Горячая линия 1905",cmPortal:"Портал горячей линии",callNN:"Позвонить в муниципалитет",nnSite:"Сайт муниципалитета",
+  prev:"Назад",next:"Далее",pledge:"Дать обещание Ганге",pledgeShare:"Поделиться обещанием",pledgeDone:"Обещание готово, поделитесь им"},
+ he:{tagline:"שומרים על רישיקש ועל האם גנגה נקיות",heroSub:"ראיתם אשפה, פלסטיק או ביוב? דווחו לרשויות בשלוש נגיעות.",
+  reportBtn:"דיווח על בעיה",reportSub:"בערך 30 שניות",gangaBtn:"כבוד לגנגה",gangaSub:"מדריך של דקה למבקרים",
+  privacy:"שום דבר לא נשמר בשרת. התלונה נשלחת מהטלפון שלכם, בשמכם.",back:"חזרה",
+  chooseIssue:"דיווח על בעיה",s1:"מה ראיתם?",s2:"הוסיפו תמונה",s3:"שליחה לרשויות",
+  takePhoto:"צלמו תמונה",retake:"צלמו שוב",skip:"בלי תמונה",
+  locGetting:"מאתרים מיקום…",locFail:"המיקום כבוי. בחרו אזור:",pickArea:"בחרו אזור",
+  email:"שליחת מייל לרשויות",emailSub:"העירייה + מוקד השר הראשי, הכול ממולא",share:"שיתוף עם תמונה",shareSub:"WhatsApp, Gmail, Telegram…",
+  x:"פרסום ב־X",xSub:"תמונה + תיוג הרשויות",copy:"העתקת התלונה",copySub:"הדביקו בכל מקום",
+  ready:"הצגה או עריכה של נוסח התלונה",edit:"אפשר לערוך, אבל לא חובה.",newReport:"דיווח נוסף",
+  copied:"הועתק",photoSaved:"התמונה נשמרה. צרפו אותה במייל עם סמל האטב.",noShare:"שיתוף לא נתמך. פותחים WhatsApp.",
+  pickX:"בחרו X ברשימה. התמונה והתיוגים כבר בפנים.",photoSavedX:"התמונה נשמרה. הוסיפו אותה לפוסט מהגלריה.",
+  portalsTitle:"מעדיפים להתקשר או להשתמש בפורטל?",callCM:"מוקד 1905",cmPortal:"פורטל המוקד",callNN:"התקשרו לעירייה",nnSite:"אתר העירייה",
+  prev:"הקודם",next:"הבא",pledge:"התחייבות לגנגה",pledgeShare:"שתפו את ההתחייבות",pledgeDone:"ההתחייבות מוכנה לשיתוף"}
+};
+
+const GANGA = {
+ en:[["Ganga is a living mother","For millions of people, Ganga is not just a river. She is Maa Ganga, worshipped every evening at aarti. Please treat her as you would your own mother."],
+     ["Say no to plastic cups","The plastic cup you buy at the ghat ends up in the river. Refuse plastic, carry your own bottle, and refill it at cafés."],
+     ["Offer flowers, not plastic","For your diya offering, choose a leaf bowl (dona) with flowers. No polythene, no foil, no plastic."],
+     ["Keep soap out of the river","Take a dip if you wish, but please don't use soap, shampoo or detergent in the Ganga, and never leave clothes or rubbish behind."],
+     ["Bin it, don't drop it","Carry your waste until you find a bin. Never feed cows plastic bags. They cannot digest them."]],
+ hi:[["गंगा एक जीवित माँ हैं","करोड़ों लोगों के लिए गंगा सिर्फ़ नदी नहीं, माँ गंगा हैं, जिनकी हर शाम आरती होती है। कृपया उनका सम्मान वैसे ही करें जैसे अपनी माँ का करते हैं।"],
+     ["प्लास्टिक कप को ना कहें","घाट पर ख़रीदा गया प्लास्टिक कप आख़िर में नदी में ही पहुँचता है। प्लास्टिक मना करें, अपनी बोतल साथ रखें और कैफ़े में भरवाएँ।"],
+     ["फूल चढ़ाएँ, प्लास्टिक नहीं","दीया अर्पण के लिए पत्तों का दोना और फूल चुनें। पॉलीथिन, फ़ॉइल या प्लास्टिक नहीं।"],
+     ["नदी में साबुन नहीं","स्नान करें, पर गंगा में साबुन, शैम्पू या डिटर्जेंट का उपयोग न करें, और कपड़े या कचरा पीछे न छोड़ें।"],
+     ["कूड़ा डस्टबिन में डालें","डस्टबिन मिलने तक अपना कचरा साथ रखें। गायों को कभी पॉलीथिन न खिलाएँ, वे उसे पचा नहीं सकतीं।"]],
+ ru:[["Ганга — живая мать","Для миллионов людей Ганга — не просто река, а Мать Ганга, которой каждый вечер поклоняются на аарти. Пожалуйста, относитесь к ней как к собственной матери."],
+     ["Откажитесь от пластиковых стаканов","Пластиковый стакан, купленный на гхате, в итоге оказывается в реке. Откажитесь от пластика, носите свою бутылку и наполняйте её в кафе."],
+     ["Цветы вместо пластика","Для подношения с лампадкой выбирайте чашу из листьев (дона) с цветами. Без полиэтилена, фольги и пластика."],
+     ["Без мыла в реке","Купайтесь, если хотите, но не используйте в Ганге мыло, шампунь или моющие средства и не оставляйте одежду и мусор."],
+     ["Мусор — в урну","Несите мусор с собой до ближайшей урны. Никогда не кормите коров пакетами: они не могут их переварить."]],
+ he:[["הגנגה היא אם חיה","עבור מיליונים, הגנגה איננה רק נהר. היא האם גנגה, שסוגדים לה בכל ערב בטקס האָרְטִי. אנא התייחסו אליה כמו לאמא שלכם."],
+     ["לא לכוסות פלסטיק","כוס הפלסטיק שקונים בגאט מגיעה בסוף לנהר. סרבו לפלסטיק, קחו בקבוק משלכם ומלאו אותו בבתי קפה."],
+     ["פרחים, לא פלסטיק","למנחת הנר, בחרו קערית עלים (דונה) עם פרחים. בלי ניילון, נייר כסף או פלסטיק."],
+     ["בלי סבון בנהר","אפשר לטבול, אבל אל תשתמשו בסבון, שמפו או חומרי ניקוי בגנגה, ואל תשאירו בגדים או אשפה."],
+     ["לפח, לא לרצפה","שמרו את האשפה איתכם עד שתמצאו פח. לעולם אל תאכילו פרות בשקיות ניילון, הן לא מסוגלות לעכל אותן."]]
+};
+const PLEDGE = {
+ en:["I pledge to keep","Maa Ganga clean","No plastic. No littering. No soap in the river."],
+ hi:["मैं संकल्प लेता/लेती हूँ","माँ गंगा को स्वच्छ रखूँगा/रखूँगी","प्लास्टिक नहीं। कचरा नहीं। नदी में साबुन नहीं।"],
+ ru:["Я обещаю беречь","чистоту Матери Ганги","Без пластика. Без мусора. Без мыла в реке."],
+ he:["אני מתחייב/ת לשמור","על ניקיון האם גנגה","בלי פלסטיק. בלי אשפה. בלי סבון בנהר."]
+};
+
+/* ---------------- State ---------------- */
+const LANGS = [["en","EN"],["hi","हि"],["ru","RU"],["he","עב"]];
+let lang = detectLang();
+const S = {cat:null, photo:null, lat:null, lng:null, place:null, locState:"idle"};
+let gi = 0, pledgeFile = null, userEdited = false;
+
+function detectLang(){
+  try{ const s = localStorage.getItem("cr_lang"); if(s && T[s]) return s; }catch(e){}
+  const n = (navigator.language||"en").toLowerCase();
+  if(n.startsWith("hi")) return "hi";
+  if(n.startsWith("ru")) return "ru";
+  if(n.startsWith("he")||n.startsWith("iw")) return "he";
+  return "en";
+}
+const t = k => (T[lang][k] ?? T.en[k] ?? k);
+const $ = id => document.getElementById(id);
+const appName = () => CONFIG.appName[lang] || CONFIG.appName.en;
+
+function setLang(l){
+  lang = l; try{ localStorage.setItem("cr_lang", l); }catch(e){}
+  document.documentElement.lang = l;
+  document.documentElement.dir = l==="he" ? "rtl" : "ltr";
+  render();
+}
+function render(){
+  document.title = appName();
+  $("brandName").textContent = appName();
+  $("langs").innerHTML = LANGS.map(([k,v])=>`<button class="${k===lang?"on":""}" onclick="setLang('${k}')" aria-pressed="${k===lang}">${v}</button>`).join("");
+  document.querySelectorAll("[data-t]").forEach(el=>{ el.textContent = t(el.dataset.t); });
+  document.querySelectorAll("[data-icon]").forEach(el=>{ el.innerHTML = ICON[el.dataset.icon]||""; });
+  $("cats").innerHTML = CATS.map(c=>`<button class="cat ${S.cat===c.id?"on":""}" onclick="chooseCat('${c.id}')" aria-pressed="${S.cat===c.id}"><span class="art">${ICON[c.id]}</span><span class="t">${c[lang]||c.en}</span></button>`).join("");
+  $("camLabel").textContent = S.photo ? t("retake") : t("takePhoto");
+  $("areaSel").innerHTML = `<option value="">${t("pickArea")}</option>` + PLACES.map(p=>`<option value="${p.id}" ${S.place&&S.place.id===p.id?"selected":""}>${lang==="hi"?p.hi:p.en}</option>`).join("");
+  const row=(href,ic,label,ext)=>`<a href="${href}" ${ext?'target="_blank" rel="noopener"':""}>${ICON[ic]}<span>${label}</span><span class="chev">${ICON.chev}</span></a>`;
+  $("portals").innerHTML = `<b>${t("portalsTitle")}</b>`+
+    row(`tel:${CONFIG.cmHelplineTel}`,"phone",t("callCM"))+
+    row(CONFIG.cmPortal,"globe",t("cmPortal"),1)+
+    row(`tel:${CONFIG.nagarNigamTel}`,"phone",t("callNN"))+
+    row(CONFIG.nagarNigamSite,"globe",t("nnSite"),1);
+  renderLoc(); renderCard();
+}
+
+/* ---------------- Navigation ---------------- */
+function go(v){ if(location.hash !== "#"+v) location.hash = v; else show(v); }
+function show(v){
+  if(!["home","report","ganga"].includes(v)) v = "home";
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on", s.id==="v-"+v));
+  if(v==="report") startLocation();
+  if(v==="ganga"){ gi = 0; renderCard(); }
+  window.scrollTo(0,0);
+}
+document.querySelector(".brand").addEventListener("keydown",e=>{ if(e.key==="Enter") go("home"); });
+window.addEventListener("hashchange", ()=>show(location.hash.slice(1)));
+
+/* ---------------- Location ---------------- */
+function startLocation(){
+  if(S.locState==="ok"||S.locState==="getting") return;
+  if(!("geolocation" in navigator)){ S.locState="fail"; renderLoc(); return; }
+  S.locState="getting"; renderLoc();
+  navigator.geolocation.getCurrentPosition(pos=>{
+    S.lat = pos.coords.latitude; S.lng = pos.coords.longitude;
+    S.place = nearestPlace(S.lat, S.lng); S.locState="ok"; renderLoc(); update();
+  }, ()=>{ S.locState="fail"; renderLoc(); update(); }, {enableHighAccuracy:true, timeout:12000, maximumAge:60000});
+}
+function distKm(a,b,c,d){ const r=x=>x*Math.PI/180; const dl=r(c-a),dn=r(d-b);
+  const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2; return 12742*Math.asin(Math.sqrt(h)); }
+function nearestPlace(lat,lng){
+  let best=null,bd=1e9;
+  PLACES.forEach(p=>{ if(p.lat==null) return; const d=distKm(lat,lng,p.lat,p.lng); if(d<bd){bd=d;best=p;} });
+  return bd<=0.7 ? best : null;
+}
+function pickArea(id){ S.place = PLACES.find(p=>p.id===id)||null; renderLoc(); update(); }
+function placeEn(){ if(S.place) return (S.lat!=null&&S.place.lat!=null?"near ":"")+S.place.en+", Rishikesh"; return "Rishikesh"; }
+function phraseEn(){ const p=placeEn(); return p.startsWith("near ")?p:(S.place?"at "+p:"in "+p); }
+function placeHi(){ if(S.place) return S.place.hi+(S.lat!=null&&S.place.lat!=null?" के पास":"")+", ऋषिकेश"; return "ऋषिकेश"; }
+function mapsLink(){ return S.lat!=null ? `https://maps.google.com/?q=${S.lat.toFixed(6)},${S.lng.toFixed(6)}` : ""; }
+function renderLoc(){
+  const chip=$("locChip"), sel=$("areaSel"); if(!chip) return;
+  chip.className="chip"; sel.classList.add("hidden");
+  if(S.locState==="getting"){ chip.innerHTML=ICON.pinOff+`<span>${t("locGetting")}</span>`; }
+  else if(S.locState==="ok"){ chip.innerHTML=ICON.pin+`<span>${S.place?(lang==="hi"?S.place.hi:S.place.en):`${S.lat.toFixed(4)}, ${S.lng.toFixed(4)}`}</span>`; }
+  else if(S.locState==="fail"){ chip.classList.add("warn"); chip.innerHTML=ICON.pinOff+`<span>${t("locFail")}</span>`; sel.classList.remove("hidden"); }
+}
+
+/* ---------------- Category ---------------- */
+function chooseCat(id){
+  S.cat=id; render();
+  $("afterCat").classList.remove("hidden");
+  $("sendBlock").classList.remove("hidden");
+  update();
+  setTimeout(()=>$("afterCat").scrollIntoView({behavior:"smooth",block:"start"}),60);
+}
+
+/* ---------------- Photo: resize + stamp date/time/location ---------------- */
+$("cam").addEventListener("change", async e=>{
+  const f = e.target.files && e.target.files[0]; if(!f) return;
+  try{ S.photo = await stampPhoto(f); }catch(err){ S.photo = f; }
+  $("preview").src = URL.createObjectURL(S.photo); $("preview").style.display="block";
+  $("skipBtn").classList.add("hidden");
+  render(); update();
+  setTimeout(()=>$("sendBlock").scrollIntoView({behavior:"smooth",block:"start"}),80);
+});
+function skipPhoto(){ $("skipBtn").classList.add("hidden"); $("sendBlock").scrollIntoView({behavior:"smooth",block:"start"}); }
+function loadImg(file){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=URL.createObjectURL(file); }); }
+async function stampPhoto(file){
+  const img = await loadImg(file);
+  const sc=Math.min(1, 1600/Math.max(img.width,img.height));
+  const w=Math.round(img.width*sc), h=Math.round(img.height*sc);
+  const c=document.createElement("canvas"); c.width=w; c.height=h; const x=c.getContext("2d");
+  x.drawImage(img,0,0,w,h);
+  const fs=Math.max(16,Math.round(w/34)), pad=Math.round(fs*.7), bh=fs*2.6+pad;
+  x.fillStyle="rgba(10,36,99,.78)"; x.fillRect(0,h-bh,w,bh);
+  x.fillStyle="#fff"; x.font=`600 ${fs}px system-ui,sans-serif`; x.textBaseline="top";
+  x.fillText(`Location: ${placeEn()}${S.lat!=null?`  (${S.lat.toFixed(5)}, ${S.lng.toFixed(5)})`:""}`,pad,h-bh+pad*.6,w-pad*2);
+  x.fillText(`Time: ${nowStr()}   |   ${CONFIG.appName.en} report`,pad,h-bh+pad*.6+fs*1.3,w-pad*2);
+  const blob = await new Promise(r=>c.toBlob(r,"image/jpeg",.85));
+  return new File([blob], `rishikesh-report-${Date.now()}.jpg`, {type:"image/jpeg"});
+}
+
+/* ---------------- Complaint text ---------------- */
+function nowStr(){ return new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+const cat = () => CATS.find(c=>c.id===S.cat);
+function subject(){ const c=cat(); return `Complaint: ${c.en} ${phraseEn()} | शिकायत: ${c.hi}`; }
+function buildMsg(){
+  const c=cat(); if(!c) return "";
+  const m=mapsLink(), when=nowStr();
+  return `Respected Sir/Madam,
+
+I wish to bring the following problem ${phraseEn()} to your notice: ${c.dEn}.
+
+Issue: ${c.en}
+Date & time: ${when}
+Location: ${placeEn()}${m?`\nMap: ${m}`:""}
+Photo: ${S.photo?"attached (date, time and location stamped on it)":"not attached"}
+
+Kindly take necessary action at the earliest.
+
+Thank you,
+A concerned citizen / visitor
+
+————————————
+आदरणीय महोदय/महोदया,
+
+आपके संज्ञान में निम्न समस्या लाना चाहते हैं — ${placeHi()}: ${c.dHi}।
+
+समस्या: ${c.hi}
+दिनांक व समय: ${when}
+स्थान: ${placeHi()}${m?`\nमानचित्र: ${m}`:""}
+फ़ोटो: ${S.photo?"संलग्न (तारीख, समय और स्थान अंकित)":"संलग्न नहीं"}
+
+कृपया शीघ्र आवश्यक कार्रवाई करें।
+
+धन्यवाद,
+एक जागरूक नागरिक`;
+}
+$("msg").addEventListener("input",()=>{ userEdited=true; });
+function update(){ if(S.cat && !userEdited) $("msg").value = buildMsg(); }
+const msgText = () => $("msg").value || buildMsg();
+const recipients = () => [...new Set([...(CONFIG.emails.all||[]), ...(CONFIG.emails[S.cat]||[])])];
+
+/* X post text, kept within 280 characters (links count as 23) */
+function tweetText(){
+  const c=cat(), m=mapsLink();
+  const tags=CONFIG.xHandles.join(" "), hash=CONFIG.hashtags.join(" ");
+  let body=`${c.en} ${phraseEn()} (${nowStr()}). Please take action.`;
+  const len = s => s.length + (m ? 24 : 0);
+  let s=`${body}\n${tags}\n${hash}`;
+  if(len(s)>280) s=`${body}\n${tags}\n#BoloRishikesh`;
+  if(len(s)>280) s=`${c.en} ${phraseEn()}. Please take action.\n${tags}`;
+  return m ? `${s}\n${m}` : s;
+}
+
+/* ---------------- Send actions ---------------- */
+function saveFile(file){
+  const a=document.createElement("a"); a.href=URL.createObjectURL(file); a.download=file.name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+const canShareFile = f => !!(f && navigator.canShare && navigator.canShare({files:[f]}));
+
+function sendEmail(){
+  if(S.photo){ saveFile(S.photo); toast(t("photoSaved"), 4500); }
+  const to=recipients().join(","), su=encodeURIComponent(subject()), bd=encodeURIComponent(msgText());
+  const isPhone = matchMedia("(pointer:coarse)").matches;
+  // Phones: the mail app (usually Gmail). Computers: Gmail in a new tab, since many have no mail app set up.
+  if(isPhone) setTimeout(()=>{ location.href=`mailto:${to}?subject=${su}&body=${bd}`; }, S.photo?700:0);
+  else window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${su}&body=${bd}`,"_blank");
+}
+async function sendShare(){
+  const text = `${subject()}\n\n${msgText()}`;
+  try{
+    if(canShareFile(S.photo)){ await navigator.share({files:[S.photo], text, title:subject()}); return; }
+    if(navigator.share){ await navigator.share({text, title:subject()}); return; }
+  }catch(e){ if(e && e.name==="AbortError") return; }
+  toast(t("noShare"));
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank");
+}
+/* X: X's web link cannot carry a photo, so on phones we open the share sheet
+   with photo + text together; the person picks X and everything is attached. */
+async function sendX(){
+  const s = tweetText();
+  if(canShareFile(S.photo)){
+    toast(t("pickX"), 4500);
+    try{ await navigator.share({files:[S.photo], text:s}); return; }
+    catch(e){ if(e && e.name==="AbortError") return; }
+  }
+  if(S.photo){ saveFile(S.photo); toast(t("photoSavedX"), 4500); }
+  window.open(`https://x.com/intent/post?text=${encodeURIComponent(s)}`,"_blank");
+}
+async function copyText(){
+  const txt=msgText();
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){ const ta=$("msg"); ta.closest("details").open=true; ta.select(); document.execCommand("copy"); }
+  toast(t("copied"));
+}
+function resetReport(){
+  S.cat=null; S.photo=null; userEdited=false; $("msg").value="";
+  $("preview").style.display="none"; $("cam").value="";
+  $("afterCat").classList.add("hidden"); $("sendBlock").classList.add("hidden"); $("skipBtn").classList.remove("hidden");
+  render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------------- Respect Ganga cards + pledge ---------------- */
+function renderCard(){
+  const list=GANGA[lang]||GANGA.en, el=$("gcard"); if(!el) return;
+  const [h,p]=list[gi];
+  el.innerHTML=`<div class="art" aria-hidden="true">${ART[gi]}</div><div class="txt"><h3>${h}</h3><p>${p}</p></div>`;
+  $("dots").innerHTML=list.map((_,i)=>`<i class="${i===gi?"on":""}"></i>`).join("");
+  $("prevBtn").classList.toggle("hidden", gi===0);
+  const last = gi===list.length-1;
+  $("nextBtn").classList.toggle("hidden", last);
+  $("pledgeBtn").classList.toggle("hidden", !last);
+}
+function card(d){ const n=(GANGA[lang]||GANGA.en).length; gi=Math.max(0,Math.min(n-1,gi+d)); renderCard(); }
+(()=>{ let x0=null; const el=$("gcard");
+  el.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});
+  el.addEventListener("touchend",e=>{ if(x0==null) return; const dx=e.changedTouches[0].clientX-x0; x0=null;
+    if(Math.abs(dx)>45){ const dir = dx<0?1:-1; card(lang==="he"?-dir:dir); } }); })();
+
+async function makePledge(){
+  const W2=1080,H=1350,c=document.createElement("canvas"); c.width=W2; c.height=H; const x=c.getContext("2d");
+  x.fillStyle="#1d5bd6"; x.fillRect(0,0,W2,H);
+  // hills
+  x.fillStyle="#3b74e6"; x.beginPath(); x.moveTo(0,980); x.lineTo(200,820); x.lineTo(380,940); x.lineTo(600,760); x.lineTo(820,930); x.lineTo(1080,800); x.lineTo(1080,1350); x.lineTo(0,1350); x.fill();
+  // river + waves
+  x.fillStyle="#123f9e"; x.fillRect(0,1060,W2,290);
+  x.strokeStyle="rgba(255,255,255,.7)"; x.lineWidth=8; x.lineCap="round";
+  for(const y of [1120,1200,1280]){ x.beginPath(); for(let i=0;i<=W2;i+=10) x.lineTo(i,y+Math.sin(i/45)*10); x.stroke(); }
+  // diya
+  x.save(); x.translate(W2/2,330); x.scale(5,5); x.lineJoin="round";
+  x.fillStyle="#ffb020"; x.strokeStyle="#fff"; x.lineWidth=2;
+  x.fill(new Path2D("M0 -6c-6-6-3-13 0-17 3 4 6 11 0 17z")); x.stroke(new Path2D("M0 -6c-6-6-3-13 0-17 3 4 6 11 0 17z"));
+  x.fillStyle="#fff"; x.fill(new Path2D("M-18 0c4 9 32 9 36 0z"));
+  x.restore();
+  x.textAlign="center"; x.fillStyle="#fff"; x.direction = lang==="he"?"rtl":"ltr";
+  const P=PLEDGE[lang]||PLEDGE.en, f="'Baloo 2','Mukta',system-ui,sans-serif";
+  x.font=`600 54px ${f}`; x.fillText(P[0],W2/2,520);
+  x.font=`800 84px ${f}`; wrap(x,P[1],W2/2,625,W2-140,98);
+  x.fillStyle="#d6e4ff"; x.font=`600 40px ${f}`; wrap(x,P[2],W2/2,830,W2-160,54);
+  x.fillStyle="#fff"; x.font=`500 34px ${f}`;
+  x.fillText(new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"})+"  |  Rishikesh",W2/2,H-130);
+  x.font=`700 38px ${f}`; x.fillText(CONFIG.appName.en+(location.host?"  |  "+location.host:""),W2/2,H-70);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png"));
+  pledgeFile=new File([blob],"my-ganga-pledge.png",{type:"image/png"});
+  $("pledgeImg").src=URL.createObjectURL(blob); $("pledgeImg").style.display="block";
+  $("pledgeShare").classList.remove("hidden"); toast(t("pledgeDone"));
+  setTimeout(()=>$("pledgeImg").scrollIntoView({behavior:"smooth"}),60);
+}
+function wrap(x,text,cx,y,maxW,lh){
+  const words=text.split(" "); let line="", yy=y;
+  for(const w of words){ const test=line?line+" "+w:w; if(x.measureText(test).width>maxW && line){ x.fillText(line,cx,yy); line=w; yy+=lh; } else line=test; }
+  x.fillText(line,cx,yy);
+}
+async function sharePledge(){
+  if(!pledgeFile) return;
+  const text=`${(PLEDGE[lang]||PLEDGE.en).slice(0,2).join(" ")}. ${location.href.split("#")[0]}`;
+  try{ if(canShareFile(pledgeFile)){ await navigator.share({files:[pledgeFile],text}); return; } }
+  catch(e){ if(e && e.name==="AbortError") return; }
+  saveFile(pledgeFile);
+}
+
+/* ---------------- Toast ---------------- */
+let tt; function toast(m,ms=2200){ const el=$("toast"); el.textContent=m; el.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("on"),ms); }
+
+/* ---------------- Start ---------------- */
+setLang(lang);
+show(location.hash.slice(1)||"home");
+</script>
+</body>
+</html>
