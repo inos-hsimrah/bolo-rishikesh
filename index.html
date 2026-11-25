@@ -101,6 +101,12 @@ h2{font-family:var(--display);font-weight:800;font-size:32px;line-height:1.1;mar
 .preview{width:100%;border-radius:12px;display:none}
 .photoAlt{display:flex;justify-content:center;gap:4px;flex-wrap:wrap}
 .photoAlt .btn{width:auto;padding:6px 10px}
+.chip small{display:block;font-size:12px;font-weight:600;color:var(--muted);line-height:1.1}
+.bankAsk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.bankAsk button{border:2px solid var(--line);background:var(--white);border-radius:14px;padding:12px 10px;text-align:start;cursor:pointer}
+.bankAsk button:active{border-color:var(--accent);background:var(--accent-soft)}
+.bankAsk b{display:block;font-size:15px;color:var(--navy);line-height:1.2}
+.bankAsk span{display:block;font-size:12.5px;color:var(--muted);line-height:1.3;margin-top:3px}
 .linkbtn{border:0;background:none;color:var(--blue);font-weight:700;font-size:15px;padding:6px 8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:14px;padding:15px;font-weight:700;font-size:18px;cursor:pointer;text-decoration:none}
 .btn svg{width:24px;height:24px}
@@ -134,6 +140,8 @@ select{width:100%;padding:13px;border-radius:12px;border:2px solid var(--line);b
 .sbtn.x .i svg,.sbtn.copy .i svg{width:22px;height:22px}
 
 .sentto{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;margin:-2px 0 12px;font-size:14px;color:var(--muted)}
+.sentto .zoneLine{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-weight:700;color:var(--navy)}
+.sentto .zoneLine svg{width:16px;height:16px}
 .sentto b{color:var(--navy);display:block;font-size:14px;margin-bottom:2px}
 .sentto ul{margin:0;padding-inline-start:18px}
 .sentto li{color:var(--ink);font-weight:600;line-height:1.35}
@@ -300,6 +308,10 @@ textarea{width:100%;min-height:170px;border:1.5px solid var(--line);border-radiu
         </div>
         <div>
           <span class="chip" id="locChip"></span>
+          <div class="bankAsk hidden" id="bankAsk">
+            <button onclick="pickBank('pauri')"><b data-t="bankE"></b><span data-t="bankEsub"></span></button>
+            <button onclick="pickBank('tehri')"><b data-t="bankW"></b><span data-t="bankWsub"></span></button>
+          </div>
           <button class="linkbtn hidden" id="changeLoc" onclick="S.showPicker=true; renderLoc()" data-t="change"></button>
           <select id="areaSel" class="hidden" onchange="pickArea(this.value)"></select>
         </div>
@@ -410,6 +422,20 @@ const CONFIG = {
                  email:"ssp-deh-ua@nic.in", x:["@DehradunPolice"], ig:[]}, // email confirmed; X handle VERIFY
     traffic:    {en:"SP Traffic, Dehradun district", hi:"एसपी यातायात, देहरादून ज़िला",
                  email:"sptrfdad.ukp@uttarakhandpolice.uk.gov.in", x:[], ig:[]}, // confirmed (dehraduntrafficpolice.uk.gov.in)
+    dmTehri:    {en:"District Magistrate Tehri Garhwal", hi:"ज़िलाधिकारी टिहरी गढ़वाल",
+                 email:"dm-teh-ua@nic.in", x:[], ig:[]},                    // confirmed (tehri.nic.in)
+    dmPauri:    {en:"District Magistrate Pauri Garhwal", hi:"ज़िलाधिकारी पौड़ी गढ़वाल",
+                 email:"dm-pau-ua@nic.in", x:[], ig:[]},                    // from the govt (NeGD) directory
+    policePauri:{en:"SSP Pauri Garhwal (police, covers Swarg Ashram & Laxman Jhula)", hi:"एसएसपी पौड़ी गढ़वाल (पुलिस, स्वर्गाश्रम व लक्ष्मण झूला)",
+                 email:"sp-pau-ua@nic.in", x:[], ig:[]},                   // from police directories — VERIFY
+    policeTehri:{en:"SSP Tehri Garhwal (police, covers Muni Ki Reti & Tapovan)", hi:"एसएसपी टिहरी गढ़वाल (पुलिस, मुनि की रेती व तपोवन)",
+                 email:"sp-teh-ua@nic.in", x:[], ig:[]},                   // from police directories — VERIFY
+    vetPauri:   {en:"Chief Veterinary Officer, Pauri Garhwal", hi:"मुख्य पशु चिकित्सा अधिकारी, पौड़ी गढ़वाल",
+                 email:"cvopaurigarhwal@gmail.com", x:[], ig:[]},          // from a Health Ministry (IDSP) list
+    foodPauri:  {en:"Food Safety Officer, Pauri Garhwal", hi:"खाद्य सुरक्षा अधिकारी, पौड़ी गढ़वाल",
+                 email:"do.fssauk.pauri@gmail.com", x:[], ig:[]},          // from a Health Ministry (IDSP) list
+    commissioner:{en:"Commissioner, Garhwal Division (covers all three districts)", hi:"आयुक्त, गढ़वाल मंडल (तीनों ज़िले)",
+                 email:"comm-gar-ua@nic.in", x:[], ig:[]},                  // confirmed (dehradun.nic.in)
     ukpcb:      {en:"Uttarakhand Pollution Control Board", hi:"उत्तराखंड प्रदूषण नियंत्रण बोर्ड",
                  email:"msukpcb@yahoo.com", x:[], ig:[]},                  // from UKPCB's own report
     namami:     {en:"Namami Gange Uttarakhand", hi:"नमामि गंगे उत्तराखंड",
@@ -417,13 +443,28 @@ const CONFIG = {
     food:       {en:"Food Safety, FDA Uttarakhand", hi:"खाद्य सुरक्षा विभाग, उत्तराखंड",
                  email:"commis.fssauk@gmail.com", x:[], ig:[]}             // from a govt (IDSP) directory — VERIFY
   },
-  // These always receive every complaint
-  always: ["nagarnigam", "cmhelp", "cmo"],
+  /* DISTRICT ZONES — Rishikesh is split across three districts:
+       Dehradun:      Rishikesh city, Triveni Ghat, market, bus stand  → Nagar Nigam Rishikesh
+       Tehri Garhwal: Muni Ki Reti, Sivananda Nagar, Tapovan (WEST bank) → Nagar Palika Muni Ki Reti–Dhalwala
+       Pauri Garhwal: Swarg Ashram, Parmarth, Laxman Jhula temple side (EAST bank) → Nagar Panchayat Swargashram–Jonk
+     local: the town body's dept id (null = no email found yet → the district DM gets every complaint instead)
+     dm / police: who handles "dm" and "police" issues in that district */
+  zones: {
+    dehradun: {en:"Dehradun district",      hi:"देहरादून ज़िला",      local:"nagarnigam", dm:"dm",      police:["police","traffic"], vet:[], food:[],
+               x:["@MLAPremAggarwal"]},   // Rishikesh MLA — his seat covers the Dehradun part
+    tehri:    {en:"Tehri Garhwal district", hi:"टिहरी गढ़वाल ज़िला",  local:null,         dm:"dmTehri", police:["policeTehri"], vet:[], food:[],   // add Nagar Palika Muni Ki Reti email when known
+               x:[]},                     // add the local MLA's verified X handle here
+    pauri:    {en:"Pauri Garhwal district", hi:"पौड़ी गढ़वाल ज़िला",   local:null,         dm:"dmPauri", police:["policePauri"], vet:["vetPauri"], food:["foodPauri"],   // add Nagar Panchayat Swargashram–Jonk email when known
+               x:[]}                      // add the local MLA's verified X handle here
+  },
+  // These always receive every complaint, whatever the district
+  always: ["cmhelp", "cmo", "commissioner"],
   // Extra departments for each issue
   routes: {
-    garbage: [], dung: [], cattle: ["dm"], cattleplastic: ["dm","ukpcb"],
-    plastic: ["ukpcb","namami"], urination: [], food: ["food"],
-    sewage: ["namami","ukpcb"], vehicles: ["police","traffic"], other: []
+    // "dm", "police", "vet" and "foodLocal" are swapped for the right district's office
+    garbage: [], dung: [], cattle: ["dm","vet"], cattleplastic: ["dm","vet","ukpcb"],
+    plastic: ["ukpcb","namami"], urination: [], food: ["food","foodLocal"],
+    sewage: ["namami","ukpcb"], vehicles: ["police"], other: []
   },
   /* SOCIAL TAGS — who is tagged on X and Instagram/Threads.
      Order = priority. If a post gets too long, tags at the END are dropped first. */
@@ -447,8 +488,7 @@ const CONFIG = {
       food:["@fssai_safefood"]                             // FSSAI Instagram (confirmed on fssai.gov.in)
     },
     // Always tagged, after the issue-specific accounts: state government + local representative
-    alwaysX: ["@MLAPremAggarwal",  // Rishikesh MLA Premchand Aggarwal
-              "@BJP4UK"],          // ruling party, Uttarakhand — VERIFY on X
+    alwaysX: ["@BJP4UK"],          // ruling party, Uttarakhand — VERIFY on X (local MLAs are set per district in zones)
     alwaysIG:[]
   },
 
@@ -542,19 +582,26 @@ const ART = [
 ];
 
 /* Known places (approximate) — to say "near Triveni Ghat" and as fallback list */
+/* Known places (approximate coordinates). zone = district. The east/west bank decides the district
+   between Ram Jhula and Laxman Jhula, so near the river the app asks which side the person is on. */
 const PLACES = [
-  {id:"triveni",  en:"Triveni Ghat",         hi:"त्रिवेणी घाट",        lat:30.1035, lng:78.2975},
-  {id:"ramjhula", en:"Ram Jhula",            hi:"राम झूला",            lat:30.1236, lng:78.3150},
-  {id:"parmarth", en:"Parmarth Niketan Ghat",hi:"परमार्थ निकेतन घाट",  lat:30.1222, lng:78.3150},
-  {id:"swarg",    en:"Swarg Ashram",         hi:"स्वर्ग आश्रम",          lat:30.1215, lng:78.3185},
-  {id:"janki",    en:"Janki Setu",           hi:"जानकी सेतु",           lat:30.1190, lng:78.3195},
-  {id:"munikireti",en:"Muni Ki Reti",        hi:"मुनि की रेती",          lat:30.1180, lng:78.3105},
-  {id:"laxman",   en:"Laxman Jhula",         hi:"लक्ष्मण झूला",          lat:30.1268, lng:78.3300},
-  {id:"tapovan",  en:"Tapovan",              hi:"तपोवन",               lat:30.1310, lng:78.3240},
-  {id:"busstand", en:"Rishikesh Bus Stand",  hi:"ऋषिकेश बस अड्डा",      lat:30.1000, lng:78.2895},
-  {id:"market",   en:"Rishikesh Main Market",hi:"ऋषिकेश मुख्य बाज़ार",   lat:30.1055, lng:78.2950},
-  {id:"otherplace",en:"Other place in Rishikesh",hi:"ऋषिकेश में अन्य स्थान", lat:null, lng:null}
+  // Dehradun district — Nagar Nigam Rishikesh
+  {id:"triveni",   zone:"dehradun", en:"Triveni Ghat",               hi:"त्रिवेणी घाट",               lat:30.1035, lng:78.2975},
+  {id:"market",    zone:"dehradun", en:"Rishikesh Main Market",      hi:"ऋषिकेश मुख्य बाज़ार",         lat:30.1055, lng:78.2950},
+  {id:"busstand",  zone:"dehradun", en:"Rishikesh Bus Stand",        hi:"ऋषिकेश बस अड्डा",             lat:30.1000, lng:78.2895},
+  {id:"citymisc",  zone:"dehradun", en:"Other place in Rishikesh city", hi:"ऋषिकेश शहर में अन्य स्थान", lat:null, lng:null},
+  // Tehri Garhwal district — west bank
+  {id:"munikireti",zone:"tehri", en:"Muni Ki Reti",                   hi:"मुनि की रेती",                 lat:30.1180, lng:78.3105},
+  {id:"ramjhulaW", zone:"tehri", en:"Ram Jhula (Sivananda Nagar side)", hi:"राम झूला (शिवानंद नगर की ओर)", lat:30.1232, lng:78.3130},
+  {id:"tapovan",   zone:"tehri", en:"Tapovan",                        hi:"तपोवन",                       lat:30.1310, lng:78.3240},
+  {id:"laxmanW",   zone:"tehri", en:"Laxman Jhula (Tapovan side)",    hi:"लक्ष्मण झूला (तपोवन की ओर)",   lat:30.1262, lng:78.3288},
+  // Pauri Garhwal district — east bank
+  {id:"parmarth",  zone:"pauri", en:"Parmarth Niketan Ghat",          hi:"परमार्थ निकेतन घाट",          lat:30.1222, lng:78.3155},
+  {id:"swarg",     zone:"pauri", en:"Swarg Ashram",                   hi:"स्वर्ग आश्रम",                  lat:30.1215, lng:78.3185},
+  {id:"ramjhulaE", zone:"pauri", en:"Ram Jhula (Swarg Ashram side)",  hi:"राम झूला (स्वर्गाश्रम की ओर)",  lat:30.1240, lng:78.3152},
+  {id:"laxmanE",   zone:"pauri", en:"Laxman Jhula (temple side, Jonk)", hi:"लक्ष्मण झूला (मंदिर की ओर, जौंक)", lat:30.1272, lng:78.3310}
 ];
+const ZONE_ORDER = ["dehradun","tehri","pauri"];
 
 const CATS = [
   {id:"garbage",   en:"Open garbage dumping", hi:"खुले में कूड़ा डालना", ru:"Несанкционированная свалка", he:"השלכת פסולת בשטח פתוח",
@@ -591,7 +638,7 @@ const CATS = [
 
 /* ---------------- UI text in 4 languages ---------------- */
 const T = {
- en:{contactT:"Questions or ideas? Contact the creator",spPoster:"Download the A4 poster (PDF)",spreadBtn:"Spread awareness",spreadSub:"Share the link, print a QR card",spTitle:"This app runs on people, not money",spIntro:"Bolo Rishikesh has no subscription, no ads and no company behind it. It only works if people know about it. Every person who scans it is one more voice for a cleaner Rishikesh and Maa Ganga.",sp1:"Share the link",sp1p:"Send it to your family, friends, hostel and neighbourhood groups.",spWa:"Share on WhatsApp",spShare:"Share",spCopy:"Copy link",linkCopied:"Link copied",sp2:"Print a QR card",sp2p:"One A4 sheet makes four cards. Any photocopy or print shop can print it in a minute: just show them this file.",spPdf:"Download the QR cards (PDF)",spShops:"Find a print shop near me",sp3:"Put it up where people will see it",sp3p:"Places where people sit or wait work best:",spLaw:"Always ask the owner first. Please don't paste it on public walls, poles, bridges or ghats. Under Uttarakhand law that counts as defacement, and it gets torn down anyway.",sblessT:"Thank you for spreading the word.",sblessP:"Every card you put up can bring many more reports. Maa Ganga is proud of you.",waText:"Seen garbage, plastic or sewage in Rishikesh? Report it to the right officials in 30 seconds with Bolo Rishikesh. Free, no app, no login:",blessT:"You did a good deed today.",blessP:"Maa Ganga's blessings are with you. She is proud of you.",pblessT:"Maa Ganga thanks you.",pblessP:"A promise kept is the truest offering. May her blessings flow with you, always.",gallery:"Choose from gallery",change:"Change",locFar:"You seem to be outside Rishikesh. Pick the area:",sentTo:"This complaint goes to:",ig:"Instagram",igSub:"Photo + caption copied",th:"Threads",thSub:"Text + tags, add photo",igNeedsPhoto:"Instagram needs a photo. Take one in step 2 first.",igCopied:"Caption and tags copied. Choose Instagram, then paste the caption.",igSaved:"Photo saved and caption copied. Post it from Instagram.",photoSavedPost:"Photo saved to your phone. Tap the photo icon in the post to add it.",tagline:"Keep Rishikesh & Maa Ganga clean",heroSub:"Seen garbage, plastic or sewage? Report it to the officials in three taps.",
+ en:{bankQ:"Which side of the Ganga are you on?",bankE:"Swarg Ashram side",bankEsub:"Parmarth, Gita Bhawan, Laxman Jhula temples",bankW:"Muni Ki Reti side",bankWsub:"Sivananda Ashram, Tapovan, Ram Jhula taxi stand",contactT:"Questions or ideas? Contact the creator",spPoster:"Download the A4 poster (PDF)",spreadBtn:"Spread awareness",spreadSub:"Share the link, print a QR card",spTitle:"This app runs on people, not money",spIntro:"Bolo Rishikesh has no subscription, no ads and no company behind it. It only works if people know about it. Every person who scans it is one more voice for a cleaner Rishikesh and Maa Ganga.",sp1:"Share the link",sp1p:"Send it to your family, friends, hostel and neighbourhood groups.",spWa:"Share on WhatsApp",spShare:"Share",spCopy:"Copy link",linkCopied:"Link copied",sp2:"Print a QR card",sp2p:"One A4 sheet makes four cards. Any photocopy or print shop can print it in a minute: just show them this file.",spPdf:"Download the QR cards (PDF)",spShops:"Find a print shop near me",sp3:"Put it up where people will see it",sp3p:"Places where people sit or wait work best:",spLaw:"Always ask the owner first. Please don't paste it on public walls, poles, bridges or ghats. Under Uttarakhand law that counts as defacement, and it gets torn down anyway.",sblessT:"Thank you for spreading the word.",sblessP:"Every card you put up can bring many more reports. Maa Ganga is proud of you.",waText:"Seen garbage, plastic or sewage in Rishikesh? Report it to the right officials in 30 seconds with Bolo Rishikesh. Free, no app, no login:",blessT:"You did a good deed today.",blessP:"Maa Ganga's blessings are with you. She is proud of you.",pblessT:"Maa Ganga thanks you.",pblessP:"A promise kept is the truest offering. May her blessings flow with you, always.",gallery:"Choose from gallery",change:"Change",locFar:"You seem to be outside Rishikesh. Pick the area:",sentTo:"This complaint goes to:",ig:"Instagram",igSub:"Photo + caption copied",th:"Threads",thSub:"Text + tags, add photo",igNeedsPhoto:"Instagram needs a photo. Take one in step 2 first.",igCopied:"Caption and tags copied. Choose Instagram, then paste the caption.",igSaved:"Photo saved and caption copied. Post it from Instagram.",photoSavedPost:"Photo saved to your phone. Tap the photo icon in the post to add it.",tagline:"Keep Rishikesh & Maa Ganga clean",heroSub:"Seen garbage, plastic or sewage? Report it to the officials in three taps.",
   reportBtn:"Report a problem",reportSub:"Takes about 30 seconds",gangaBtn:"Respect Ganga",gangaSub:"1-minute guide for visitors",
   privacy:"Nothing is stored on any server. Your complaint is sent from your own phone, in your name.",back:"Back",
   chooseIssue:"Report a problem",s1:"What did you see?",s2:"Add a photo",s3:"Send to officials",
@@ -604,7 +651,7 @@ const T = {
   pickX:"Choose X in the list. Your photo and the tags are included.",photoSavedX:"Photo saved. Add it to your post from your gallery.",
   portalsTitle:"Prefer to call or use a portal?",callCM:"Call CM Helpline 1905",cmPortal:"CM Helpline portal",callNN:"Call Nagar Nigam",nnSite:"Nagar Nigam website",
   prev:"Previous",next:"Next",pledge:"Take the Ganga pledge",pledgeShare:"Share my pledge",pledgeDone:"Your pledge is ready to share"},
- hi:{contactT:"सवाल या सुझाव? बनाने वाले से संपर्क करें",spPoster:"A4 पोस्टर डाउनलोड करें (PDF)",spreadBtn:"जागरूकता फैलाएँ",spreadSub:"लिंक शेयर करें, QR कार्ड छापें",spTitle:"यह ऐप पैसे से नहीं, लोगों से चलता है",spIntro:"बोलो ऋषिकेश का कोई सब्सक्रिप्शन नहीं, कोई विज्ञापन नहीं, कोई कंपनी नहीं। यह तभी काम करता है जब लोग इसके बारे में जानें। हर स्कैन करने वाला व्यक्ति स्वच्छ ऋषिकेश और माँ गंगा के लिए एक और आवाज़ है।",sp1:"लिंक शेयर करें",sp1p:"परिवार, दोस्तों, हॉस्टल और मोहल्ले के ग्रुप में भेजें।",spWa:"WhatsApp पर शेयर करें",spShare:"शेयर करें",spCopy:"लिंक कॉपी करें",linkCopied:"लिंक कॉपी हो गया",sp2:"QR कार्ड छापें",sp2p:"एक A4 शीट में चार कार्ड बनते हैं। कोई भी फ़ोटोकॉपी या प्रिंट की दुकान इसे एक मिनट में छाप देगी, बस यह फ़ाइल दिखाएँ।",spPdf:"QR कार्ड डाउनलोड करें (PDF)",spShops:"मेरे पास प्रिंट की दुकान खोजें",sp3:"ऐसी जगह लगाएँ जहाँ लोग देखें",sp3p:"जहाँ लोग बैठते या इंतज़ार करते हैं, वहाँ सबसे अच्छा:",spLaw:"हमेशा पहले मालिक से पूछें। कृपया सार्वजनिक दीवारों, खंभों, पुलों या घाटों पर न चिपकाएँ। उत्तराखंड कानून में यह संपत्ति विरूपण माना जाता है, और ऐसे पोस्टर हटा भी दिए जाते हैं।",sblessT:"जागरूकता फैलाने के लिए धन्यवाद।",sblessP:"आपका लगाया हर कार्ड कई और शिकायतें ला सकता है। माँ गंगा को आप पर गर्व है।",waText:"ऋषिकेश में कचरा, प्लास्टिक या गंदा नाला दिखा? बोलो ऋषिकेश से 30 सेकंड में सही अधिकारियों तक शिकायत भेजें। मुफ़्त, कोई ऐप या लॉगिन नहीं:",blessT:"आज आपने एक नेक काम किया।",blessP:"माँ गंगा का आशीर्वाद आपके साथ है। उन्हें आप पर गर्व है।",pblessT:"माँ गंगा आपका धन्यवाद करती हैं।",pblessP:"निभाया गया संकल्प ही सबसे सच्चा अर्पण है। माँ गंगा का आशीर्वाद सदा आपके साथ बहता रहे।",gallery:"गैलरी से चुनें",change:"बदलें",locFar:"आप ऋषिकेश से बाहर लगते हैं। क्षेत्र चुनें:",sentTo:"यह शिकायत इन्हें जाएगी:",ig:"Instagram",igSub:"फ़ोटो + कैप्शन कॉपी",th:"Threads",thSub:"टेक्स्ट + टैग, फ़ोटो जोड़ें",igNeedsPhoto:"Instagram के लिए फ़ोटो ज़रूरी है। पहले चरण 2 में फ़ोटो लें।",igCopied:"कैप्शन और टैग कॉपी हो गए। Instagram चुनें, फिर कैप्शन पेस्ट करें।",igSaved:"फ़ोटो सेव और कैप्शन कॉपी हो गया। Instagram से पोस्ट करें।",photoSavedPost:"फ़ोटो फ़ोन में सेव हो गई। पोस्ट में फ़ोटो आइकन दबाकर जोड़ें।",tagline:"ऋषिकेश और माँ गंगा को स्वच्छ रखें",heroSub:"कचरा, प्लास्टिक या गंदा नाला दिखा? तीन टैप में अधिकारियों तक शिकायत पहुँचाएँ।",
+ hi:{bankQ:"आप गंगा के किस किनारे पर हैं?",bankE:"स्वर्गाश्रम की ओर",bankEsub:"परमार्थ, गीता भवन, लक्ष्मण झूला मंदिर",bankW:"मुनि की रेती की ओर",bankWsub:"शिवानंद आश्रम, तपोवन, राम झूला टैक्सी स्टैंड",contactT:"सवाल या सुझाव? बनाने वाले से संपर्क करें",spPoster:"A4 पोस्टर डाउनलोड करें (PDF)",spreadBtn:"जागरूकता फैलाएँ",spreadSub:"लिंक शेयर करें, QR कार्ड छापें",spTitle:"यह ऐप पैसे से नहीं, लोगों से चलता है",spIntro:"बोलो ऋषिकेश का कोई सब्सक्रिप्शन नहीं, कोई विज्ञापन नहीं, कोई कंपनी नहीं। यह तभी काम करता है जब लोग इसके बारे में जानें। हर स्कैन करने वाला व्यक्ति स्वच्छ ऋषिकेश और माँ गंगा के लिए एक और आवाज़ है।",sp1:"लिंक शेयर करें",sp1p:"परिवार, दोस्तों, हॉस्टल और मोहल्ले के ग्रुप में भेजें।",spWa:"WhatsApp पर शेयर करें",spShare:"शेयर करें",spCopy:"लिंक कॉपी करें",linkCopied:"लिंक कॉपी हो गया",sp2:"QR कार्ड छापें",sp2p:"एक A4 शीट में चार कार्ड बनते हैं। कोई भी फ़ोटोकॉपी या प्रिंट की दुकान इसे एक मिनट में छाप देगी, बस यह फ़ाइल दिखाएँ।",spPdf:"QR कार्ड डाउनलोड करें (PDF)",spShops:"मेरे पास प्रिंट की दुकान खोजें",sp3:"ऐसी जगह लगाएँ जहाँ लोग देखें",sp3p:"जहाँ लोग बैठते या इंतज़ार करते हैं, वहाँ सबसे अच्छा:",spLaw:"हमेशा पहले मालिक से पूछें। कृपया सार्वजनिक दीवारों, खंभों, पुलों या घाटों पर न चिपकाएँ। उत्तराखंड कानून में यह संपत्ति विरूपण माना जाता है, और ऐसे पोस्टर हटा भी दिए जाते हैं।",sblessT:"जागरूकता फैलाने के लिए धन्यवाद।",sblessP:"आपका लगाया हर कार्ड कई और शिकायतें ला सकता है। माँ गंगा को आप पर गर्व है।",waText:"ऋषिकेश में कचरा, प्लास्टिक या गंदा नाला दिखा? बोलो ऋषिकेश से 30 सेकंड में सही अधिकारियों तक शिकायत भेजें। मुफ़्त, कोई ऐप या लॉगिन नहीं:",blessT:"आज आपने एक नेक काम किया।",blessP:"माँ गंगा का आशीर्वाद आपके साथ है। उन्हें आप पर गर्व है।",pblessT:"माँ गंगा आपका धन्यवाद करती हैं।",pblessP:"निभाया गया संकल्प ही सबसे सच्चा अर्पण है। माँ गंगा का आशीर्वाद सदा आपके साथ बहता रहे।",gallery:"गैलरी से चुनें",change:"बदलें",locFar:"आप ऋषिकेश से बाहर लगते हैं। क्षेत्र चुनें:",sentTo:"यह शिकायत इन्हें जाएगी:",ig:"Instagram",igSub:"फ़ोटो + कैप्शन कॉपी",th:"Threads",thSub:"टेक्स्ट + टैग, फ़ोटो जोड़ें",igNeedsPhoto:"Instagram के लिए फ़ोटो ज़रूरी है। पहले चरण 2 में फ़ोटो लें।",igCopied:"कैप्शन और टैग कॉपी हो गए। Instagram चुनें, फिर कैप्शन पेस्ट करें।",igSaved:"फ़ोटो सेव और कैप्शन कॉपी हो गया। Instagram से पोस्ट करें।",photoSavedPost:"फ़ोटो फ़ोन में सेव हो गई। पोस्ट में फ़ोटो आइकन दबाकर जोड़ें।",tagline:"ऋषिकेश और माँ गंगा को स्वच्छ रखें",heroSub:"कचरा, प्लास्टिक या गंदा नाला दिखा? तीन टैप में अधिकारियों तक शिकायत पहुँचाएँ।",
   reportBtn:"समस्या की शिकायत करें",reportSub:"लगभग 30 सेकंड",gangaBtn:"गंगा का सम्मान",gangaSub:"यात्रियों के लिए 1 मिनट की गाइड",
   privacy:"कोई भी जानकारी सर्वर पर सेव नहीं होती। शिकायत आपके अपने फ़ोन से, आपके नाम से जाती है।",back:"वापस",
   chooseIssue:"समस्या की शिकायत करें",s1:"आपने क्या देखा?",s2:"फ़ोटो जोड़ें",s3:"अधिकारियों को भेजें",
@@ -617,7 +664,7 @@ const T = {
   pickX:"सूची में X चुनें। फ़ोटो और टैग साथ में जाएँगे।",photoSavedX:"फ़ोटो सेव हो गई। गैलरी से पोस्ट में जोड़ें।",
   portalsTitle:"कॉल या पोर्टल से शिकायत करना चाहते हैं?",callCM:"सीएम हेल्पलाइन 1905 पर कॉल करें",cmPortal:"सीएम हेल्पलाइन पोर्टल",callNN:"नगर निगम को कॉल करें",nnSite:"नगर निगम वेबसाइट",
   prev:"पिछला",next:"अगला",pledge:"गंगा संकल्प लें",pledgeShare:"मेरा संकल्प शेयर करें",pledgeDone:"आपका संकल्प शेयर के लिए तैयार है"},
- ru:{contactT:"Вопросы или идеи? Напишите автору",spPoster:"Скачать плакат A4 (PDF)",spreadBtn:"Расскажите другим",spreadSub:"Поделитесь ссылкой, распечатайте QR",spTitle:"Это приложение держится на людях, а не на деньгах",spIntro:"У Bolo Rishikesh нет подписки, рекламы и компании за ним. Оно работает, только если о нём знают. Каждый, кто его отсканирует, — ещё один голос за чистый Ришикеш и Мать Гангу.",sp1:"Поделитесь ссылкой",sp1p:"Отправьте её семье, друзьям, в чаты хостела и соседей.",spWa:"Отправить в WhatsApp",spShare:"Поделиться",spCopy:"Копировать ссылку",linkCopied:"Ссылка скопирована",sp2:"Распечатайте QR-карточку",sp2p:"На одном листе A4 — четыре карточки. Любой копицентр распечатает за минуту: просто покажите этот файл.",spPdf:"Скачать QR-карточки (PDF)",spShops:"Найти копицентр рядом",sp3:"Разместите там, где их увидят",sp3p:"Лучше всего там, где люди сидят или ждут:",spLaw:"Всегда спрашивайте владельца. Не клейте на общественные стены, столбы, мосты и гхаты: по закону Уттаракханда это порча имущества, и такие листовки всё равно срывают.",sblessT:"Спасибо, что рассказываете другим.",sblessP:"Каждая карточка может принести много новых сообщений. Мать Ганга гордится вами.",waText:"Видите мусор, пластик или стоки в Ришикеше? Сообщите нужным службам за 30 секунд через Bolo Rishikesh. Бесплатно, без приложения и входа:",blessT:"Сегодня вы сделали доброе дело.",blessP:"Благословение Матери Ганги с вами. Она гордится вами.",pblessT:"Мать Ганга благодарит вас.",pblessP:"Сдержанное обещание — самое искреннее подношение. Пусть её благословение всегда будет с вами.",gallery:"Выбрать из галереи",change:"Изменить",locFar:"Похоже, вы не в Ришикеше. Выберите район:",sentTo:"Жалоба уйдёт:",ig:"Instagram",igSub:"Фото + подпись скопирована",th:"Threads",thSub:"Текст + отметки, добавьте фото",igNeedsPhoto:"Для Instagram нужно фото. Сначала сделайте его в шаге 2.",igCopied:"Подпись и отметки скопированы. Выберите Instagram и вставьте подпись.",igSaved:"Фото сохранено, подпись скопирована. Опубликуйте из Instagram.",photoSavedPost:"Фото сохранено. Добавьте его в пост через значок фото.",tagline:"Сохраним Ришикеш и Мать Гангу чистыми",heroSub:"Видите мусор, пластик или стоки? Сообщите властям в три касания.",
+ ru:{bankQ:"На каком берегу Ганги вы?",bankE:"Сторона Сварг Ашрама",bankEsub:"Парматх, Гита Бхаван, храмы Лакшман Джхулы",bankW:"Сторона Муни-ки-Рети",bankWsub:"Ашрам Шивананды, Тапован, стоянка у Рам Джхулы",contactT:"Вопросы или идеи? Напишите автору",spPoster:"Скачать плакат A4 (PDF)",spreadBtn:"Расскажите другим",spreadSub:"Поделитесь ссылкой, распечатайте QR",spTitle:"Это приложение держится на людях, а не на деньгах",spIntro:"У Bolo Rishikesh нет подписки, рекламы и компании за ним. Оно работает, только если о нём знают. Каждый, кто его отсканирует, — ещё один голос за чистый Ришикеш и Мать Гангу.",sp1:"Поделитесь ссылкой",sp1p:"Отправьте её семье, друзьям, в чаты хостела и соседей.",spWa:"Отправить в WhatsApp",spShare:"Поделиться",spCopy:"Копировать ссылку",linkCopied:"Ссылка скопирована",sp2:"Распечатайте QR-карточку",sp2p:"На одном листе A4 — четыре карточки. Любой копицентр распечатает за минуту: просто покажите этот файл.",spPdf:"Скачать QR-карточки (PDF)",spShops:"Найти копицентр рядом",sp3:"Разместите там, где их увидят",sp3p:"Лучше всего там, где люди сидят или ждут:",spLaw:"Всегда спрашивайте владельца. Не клейте на общественные стены, столбы, мосты и гхаты: по закону Уттаракханда это порча имущества, и такие листовки всё равно срывают.",sblessT:"Спасибо, что рассказываете другим.",sblessP:"Каждая карточка может принести много новых сообщений. Мать Ганга гордится вами.",waText:"Видите мусор, пластик или стоки в Ришикеше? Сообщите нужным службам за 30 секунд через Bolo Rishikesh. Бесплатно, без приложения и входа:",blessT:"Сегодня вы сделали доброе дело.",blessP:"Благословение Матери Ганги с вами. Она гордится вами.",pblessT:"Мать Ганга благодарит вас.",pblessP:"Сдержанное обещание — самое искреннее подношение. Пусть её благословение всегда будет с вами.",gallery:"Выбрать из галереи",change:"Изменить",locFar:"Похоже, вы не в Ришикеше. Выберите район:",sentTo:"Жалоба уйдёт:",ig:"Instagram",igSub:"Фото + подпись скопирована",th:"Threads",thSub:"Текст + отметки, добавьте фото",igNeedsPhoto:"Для Instagram нужно фото. Сначала сделайте его в шаге 2.",igCopied:"Подпись и отметки скопированы. Выберите Instagram и вставьте подпись.",igSaved:"Фото сохранено, подпись скопирована. Опубликуйте из Instagram.",photoSavedPost:"Фото сохранено. Добавьте его в пост через значок фото.",tagline:"Сохраним Ришикеш и Мать Гангу чистыми",heroSub:"Видите мусор, пластик или стоки? Сообщите властям в три касания.",
   reportBtn:"Сообщить о проблеме",reportSub:"Около 30 секунд",gangaBtn:"Уважайте Гангу",gangaSub:"Гид на 1 минуту для гостей",
   privacy:"Ничего не хранится на сервере. Жалоба отправляется с вашего телефона, от вашего имени.",back:"Назад",
   chooseIssue:"Сообщить о проблеме",s1:"Что вы увидели?",s2:"Добавьте фото",s3:"Отправить властям",
@@ -630,7 +677,7 @@ const T = {
   pickX:"Выберите X в списке. Фото и отметки уже добавлены.",photoSavedX:"Фото сохранено. Добавьте его в пост из галереи.",
   portalsTitle:"Хотите позвонить или использовать портал?",callCM:"Горячая линия 1905",cmPortal:"Портал горячей линии",callNN:"Позвонить в муниципалитет",nnSite:"Сайт муниципалитета",
   prev:"Назад",next:"Далее",pledge:"Дать обещание Ганге",pledgeShare:"Поделиться обещанием",pledgeDone:"Обещание готово, поделитесь им"},
- he:{contactT:"שאלות או רעיונות? צרו קשר עם היוצר",spPoster:"הורדת פוסטר A4 ‏(PDF)",spreadBtn:"הפיצו את המילה",spreadSub:"שתפו קישור, הדפיסו QR",spTitle:"האפליקציה הזו פועלת על אנשים, לא על כסף",spIntro:"לבולו רישיקש אין מנוי, אין פרסומות ואין חברה מאחוריה. היא עובדת רק אם אנשים יודעים עליה. כל מי שסורק אותה הוא עוד קול למען רישיקש נקייה והאם גנגה.",sp1:"שתפו את הקישור",sp1p:"שלחו למשפחה, לחברים ולקבוצות של ההוסטל והשכונה.",spWa:"שיתוף בוואטסאפ",spShare:"שיתוף",spCopy:"העתקת קישור",linkCopied:"הקישור הועתק",sp2:"הדפיסו כרטיס QR",sp2p:"דף A4 אחד יוצר ארבעה כרטיסים. כל חנות צילום או דפוס תדפיס אותו בדקה: פשוט הראו להם את הקובץ.",spPdf:"הורדת כרטיסי ה-QR ‏(PDF)",spShops:"מציאת חנות דפוס קרובה",sp3:"תלו במקום שרואים",sp3p:"הכי טוב במקומות שבהם אנשים יושבים או מחכים:",spLaw:"תמיד בקשו רשות מהבעלים. אל תדביקו על קירות ציבוריים, עמודים, גשרים או גאטים. לפי חוק אוטרקאנד זו השחתת רכוש, וממילא יסירו אותם.",sblessT:"תודה שאתם מפיצים את המילה.",sblessP:"כל כרטיס שתתלו יכול להביא עוד הרבה דיווחים. האם גנגה גאה בכם.",waText:"ראיתם אשפה, פלסטיק או ביוב ברישיקש? דווחו לגורם הנכון תוך 30 שניות עם Bolo Rishikesh. חינם, בלי אפליקציה ובלי הרשמה:",blessT:"היום עשיתם מעשה טוב.",blessP:"ברכתה של האם גנגה איתכם. היא גאה בכם.",pblessT:"האם גנגה מודה לכם.",pblessP:"הבטחה שמקיימים היא המנחה האמיתית ביותר. שברכתה תזרום איתכם תמיד.",gallery:"בחירה מהגלריה",change:"שינוי",locFar:"נראה שאתם מחוץ לרישיקש. בחרו אזור:",sentTo:"התלונה תישלח אל:",ig:"Instagram",igSub:"תמונה + כיתוב מועתק",th:"Threads",thSub:"טקסט + תיוגים, הוסיפו תמונה",igNeedsPhoto:"באינסטגרם צריך תמונה. צלמו קודם בשלב 2.",igCopied:"הכיתוב והתיוגים הועתקו. בחרו Instagram והדביקו את הכיתוב.",igSaved:"התמונה נשמרה והכיתוב הועתק. פרסמו מאינסטגרם.",photoSavedPost:"התמונה נשמרה בטלפון. הוסיפו אותה בפוסט דרך סמל התמונה.",tagline:"שומרים על רישיקש ועל האם גנגה נקיות",heroSub:"ראיתם אשפה, פלסטיק או ביוב? דווחו לרשויות בשלוש נגיעות.",
+ he:{bankQ:"באיזה צד של הגנגה אתם?",bankE:"צד סוורג אשרם",bankEsub:"פרמארת, גיטה בהוואן, מקדשי לקשמן ג׳ולה",bankW:"צד מוני קי רטי",bankWsub:"אשרם שיבננדה, טפובן, תחנת המוניות של ראם ג׳ולה",contactT:"שאלות או רעיונות? צרו קשר עם היוצר",spPoster:"הורדת פוסטר A4 ‏(PDF)",spreadBtn:"הפיצו את המילה",spreadSub:"שתפו קישור, הדפיסו QR",spTitle:"האפליקציה הזו פועלת על אנשים, לא על כסף",spIntro:"לבולו רישיקש אין מנוי, אין פרסומות ואין חברה מאחוריה. היא עובדת רק אם אנשים יודעים עליה. כל מי שסורק אותה הוא עוד קול למען רישיקש נקייה והאם גנגה.",sp1:"שתפו את הקישור",sp1p:"שלחו למשפחה, לחברים ולקבוצות של ההוסטל והשכונה.",spWa:"שיתוף בוואטסאפ",spShare:"שיתוף",spCopy:"העתקת קישור",linkCopied:"הקישור הועתק",sp2:"הדפיסו כרטיס QR",sp2p:"דף A4 אחד יוצר ארבעה כרטיסים. כל חנות צילום או דפוס תדפיס אותו בדקה: פשוט הראו להם את הקובץ.",spPdf:"הורדת כרטיסי ה-QR ‏(PDF)",spShops:"מציאת חנות דפוס קרובה",sp3:"תלו במקום שרואים",sp3p:"הכי טוב במקומות שבהם אנשים יושבים או מחכים:",spLaw:"תמיד בקשו רשות מהבעלים. אל תדביקו על קירות ציבוריים, עמודים, גשרים או גאטים. לפי חוק אוטרקאנד זו השחתת רכוש, וממילא יסירו אותם.",sblessT:"תודה שאתם מפיצים את המילה.",sblessP:"כל כרטיס שתתלו יכול להביא עוד הרבה דיווחים. האם גנגה גאה בכם.",waText:"ראיתם אשפה, פלסטיק או ביוב ברישיקש? דווחו לגורם הנכון תוך 30 שניות עם Bolo Rishikesh. חינם, בלי אפליקציה ובלי הרשמה:",blessT:"היום עשיתם מעשה טוב.",blessP:"ברכתה של האם גנגה איתכם. היא גאה בכם.",pblessT:"האם גנגה מודה לכם.",pblessP:"הבטחה שמקיימים היא המנחה האמיתית ביותר. שברכתה תזרום איתכם תמיד.",gallery:"בחירה מהגלריה",change:"שינוי",locFar:"נראה שאתם מחוץ לרישיקש. בחרו אזור:",sentTo:"התלונה תישלח אל:",ig:"Instagram",igSub:"תמונה + כיתוב מועתק",th:"Threads",thSub:"טקסט + תיוגים, הוסיפו תמונה",igNeedsPhoto:"באינסטגרם צריך תמונה. צלמו קודם בשלב 2.",igCopied:"הכיתוב והתיוגים הועתקו. בחרו Instagram והדביקו את הכיתוב.",igSaved:"התמונה נשמרה והכיתוב הועתק. פרסמו מאינסטגרם.",photoSavedPost:"התמונה נשמרה בטלפון. הוסיפו אותה בפוסט דרך סמל התמונה.",tagline:"שומרים על רישיקש ועל האם גנגה נקיות",heroSub:"ראיתם אשפה, פלסטיק או ביוב? דווחו לרשויות בשלוש נגיעות.",
   reportBtn:"דיווח על בעיה",reportSub:"בערך 30 שניות",gangaBtn:"כבוד לגנגה",gangaSub:"מדריך של דקה למבקרים",
   privacy:"שום דבר לא נשמר בשרת. התלונה נשלחת מהטלפון שלכם, בשמכם.",back:"חזרה",
   chooseIssue:"דיווח על בעיה",s1:"מה ראיתם?",s2:"הוסיפו תמונה",s3:"שליחה לרשויות",
@@ -679,7 +726,7 @@ const SPREAD_PLACES = {"en": ["Café and restaurant tables", "Hostels, guesthous
 /* ---------------- State ---------------- */
 const LANGS = [["en","EN"],["hi","हि"],["ru","RU"],["he","עב"]];
 let lang = detectLang();
-const S = {cat:null, photo:null, raw:null, lat:null, lng:null, place:null, locState:"idle", showPicker:false};
+const S = {cat:null, photo:null, raw:null, lat:null, lng:null, place:null, locState:"idle", showPicker:false, askBank:false};
 let gi = 0, pledgeFile = null, userEdited = false;
 
 function detectLang(){
@@ -708,7 +755,9 @@ function render(){
   document.querySelectorAll("[data-icon]").forEach(el=>{ el.innerHTML = ICON[el.dataset.icon]||""; });
   $("cats").innerHTML = CATS.map(c=>`<button class="cat ${S.cat===c.id?"on":""}" onclick="chooseCat('${c.id}')" aria-pressed="${S.cat===c.id}"><span class="art">${ICON[c.id]}</span><span class="t">${c[lang]||c.en}</span></button>`).join("");
   $("camLabel").textContent = S.photo ? t("retake") : t("takePhoto");
-  $("areaSel").innerHTML = `<option value="">${t("pickArea")}</option>` + PLACES.map(p=>`<option value="${p.id}" ${S.place&&S.place.id===p.id?"selected":""}>${lang==="hi"?p.hi:p.en}</option>`).join("");
+  $("areaSel").innerHTML = `<option value="">${t("pickArea")}</option>` + ZONE_ORDER.map(z=>
+    `<optgroup label="${lang==="hi"?CONFIG.zones[z].hi:CONFIG.zones[z].en}">`+
+    PLACES.filter(p=>p.zone===z).map(p=>`<option value="${p.id}" ${S.place&&S.place.id===p.id?"selected":""}>${lang==="hi"?p.hi:p.en}</option>`).join("")+`</optgroup>`).join("");
   const row=(href,ic,label,ext)=>`<a href="${href}" ${ext?'target="_blank" rel="noopener"':""}>${ICON[ic]}<span>${label}</span><span class="chev">${ICON.chev}</span></a>`;
   $("portals").innerHTML = `<b>${t("portalsTitle")}</b>`+
     row(`tel:${CONFIG.cmHelplineTel}`,"phone",t("callCM"))+
@@ -745,36 +794,46 @@ function startLocation(){
     S.lat = pos.coords.latitude; S.lng = pos.coords.longitude;
     // More than ~12 km from Triveni Ghat = not in Rishikesh (testing from home, or a GPS glitch)
     if(distKm(S.lat,S.lng,30.1035,78.2975) > 12){ S.locState="far"; S.place=null; }
-    else { S.locState="ok"; S.place = nearestPlace(S.lat, S.lng); }
-    renderLoc(); update(); restamp();
+    else {
+      S.locState="ok"; S.place = nearestPlace(S.lat, S.lng);
+      // Between Ram Jhula and Laxman Jhula the river bank decides the district,
+      // and GPS can't reliably tell the banks apart — so ask with one tap.
+      S.askBank = !!(S.place && S.place.zone!=="dehradun");
+    }
+    renderLoc(); update(); restamp(); renderSentTo();
   }, ()=>{ S.locState="fail"; renderLoc(); update(); }, {enableHighAccuracy:true, timeout:12000, maximumAge:60000});
 }
 function distKm(a,b,c,d){ const r=x=>x*Math.PI/180; const dl=r(c-a),dn=r(d-b);
   const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2; return 12742*Math.asin(Math.sqrt(h)); }
-function nearestPlace(lat,lng){
+function nearestPlace(lat,lng,zone){
   let best=null,bd=1e9;
-  PLACES.forEach(p=>{ if(p.lat==null) return; const d=distKm(lat,lng,p.lat,p.lng); if(d<bd){bd=d;best=p;} });
-  return bd<=0.7 ? best : null;
+  PLACES.forEach(p=>{ if(p.lat==null||(zone&&p.zone!==zone)) return; const d=distKm(lat,lng,p.lat,p.lng); if(d<bd){bd=d;best=p;} });
+  return (bd<=0.7||zone) ? best : null;
 }
-function pickArea(id){ S.place = PLACES.find(p=>p.id===id)||null; S.showPicker=false; renderLoc(); update(); restamp(); }
+function pickBank(zone){   // one tap: which side of the Ganga
+  S.place = gpsOk() ? nearestPlace(S.lat,S.lng,zone) : PLACES.find(p=>p.zone===zone);
+  S.askBank=false; S.showPicker=false; renderLoc(); update(); restamp(); renderSentTo();
+}
+const zoneId = () => S.place ? S.place.zone : null;
+const zoneName = () => { const z=CONFIG.zones[zoneId()]; return z ? (lang==="hi"?z.hi:z.en) : ""; };
+function pickArea(id){ S.place = PLACES.find(p=>p.id===id)||null; S.showPicker=false; S.askBank=false; renderLoc(); update(); restamp(); renderSentTo(); }
 const gpsOk = () => S.locState==="ok" && S.lat!=null;   // only trust GPS when it is inside Rishikesh
-function placeEn(){ if(S.place) return (gpsOk()&&S.place.lat!=null?"near ":"")+S.place.en+", Rishikesh"; return "Rishikesh"; }
+function placeEn(){ if(S.place) return (gpsOk()&&S.place.lat!=null?"near ":"")+S.place.en+", Rishikesh ("+CONFIG.zones[S.place.zone].en+")"; return "Rishikesh"; }
 function phraseEn(){ const p=placeEn(); return p.startsWith("near ")?p:(S.place?"at "+p:"in "+p); }
-function placeHi(){ if(S.place) return S.place.hi+(gpsOk()&&S.place.lat!=null?" के पास":"")+", ऋषिकेश"; return "ऋषिकेश"; }
+function placeHi(){ if(S.place) return S.place.hi+(gpsOk()&&S.place.lat!=null?" के पास":"")+", ऋषिकेश ("+CONFIG.zones[S.place.zone].hi+")"; return "ऋषिकेश"; }
 function mapsLink(){ return gpsOk() ? `https://maps.google.com/?q=${S.lat.toFixed(6)},${S.lng.toFixed(6)}` : ""; }
 function renderLoc(){
-  const chip=$("locChip"), sel=$("areaSel"), chg=$("changeLoc"); if(!chip) return;
-  chip.className="chip"; sel.classList.add("hidden"); chg.classList.add("hidden");
-  const pname = p => lang==="hi"?p.hi:p.en;
-  if(S.locState==="getting"){ chip.innerHTML=ICON.pinOff+`<span>${t("locGetting")}</span>`; }
-  else if(S.locState==="ok"){
-    chip.innerHTML=ICON.pin+`<span>${S.place?pname(S.place):"Rishikesh"}</span>`;
-    if(S.showPicker) sel.classList.remove("hidden"); else chg.classList.remove("hidden");   // let people correct a wrong ghat
+  const chip=$("locChip"), sel=$("areaSel"), chg=$("changeLoc"), bank=$("bankAsk"); if(!chip) return;
+  chip.className="chip"; sel.classList.add("hidden"); chg.classList.add("hidden"); bank.classList.add("hidden");
+  const label = p => `<span>${lang==="hi"?p.hi:p.en}<small>${zoneName()}</small></span>`;
+  if(S.locState==="getting"){ chip.innerHTML=ICON.pinOff+`<span>${t("locGetting")}</span>`; return; }
+  if(S.askBank && !S.showPicker){   // near the river, north of the city: which bank?
+    chip.innerHTML=ICON.pin+`<span>${t("bankQ")}</span>`; bank.classList.remove("hidden"); return;
   }
-  else if(S.locState==="fail"||S.locState==="far"){
-    if(S.place && !S.showPicker){ chip.innerHTML=ICON.pin+`<span>${pname(S.place)}</span>`; chg.classList.remove("hidden"); }
-    else { chip.classList.add("warn"); chip.innerHTML=ICON.pinOff+`<span>${t(S.locState==="far"?"locFar":"locFail")}</span>`; sel.classList.remove("hidden"); }
-  }
+  if(S.place && !S.showPicker){ chip.innerHTML=ICON.pin+label(S.place); chg.classList.remove("hidden"); return; }
+  if(S.locState==="ok" && !S.showPicker){ chip.innerHTML=ICON.pin+`<span>Rishikesh</span>`; chg.classList.remove("hidden"); return; }
+  if(S.locState==="fail"||S.locState==="far"||!S.place){ chip.classList.add("warn"); chip.innerHTML=ICON.pinOff+`<span>${t(S.locState==="far"?"locFar":(S.locState==="ok"?"pickArea":"locFail"))}</span>`; }
+  sel.classList.remove("hidden");
 }
 
 /* ---------------- Category ---------------- */
@@ -861,16 +920,30 @@ A concerned citizen / visitor
 $("msg").addEventListener("input",()=>{ userEdited=true; });
 function update(){ if(S.cat && !userEdited) $("msg").value = buildMsg(); }
 const msgText = () => $("msg").value || buildMsg();
-const deptIds = () => [...new Set([...CONFIG.always, ...(CONFIG.routes[S.cat]||[])])];
+/* Who gets this complaint: always-list + the district's town body (or its DM if the town body
+   has no email) + issue-specific departments, with "dm"/"police" swapped for that district's. */
+function deptIds(){
+  const z = CONFIG.zones[zoneId()];
+  const ids = [...CONFIG.always];
+  if(z){ if(z.local) ids.push(z.local); else ids.push(z.dm); }
+  (CONFIG.routes[S.cat]||[]).forEach(r=>{
+    if(r==="dm"){ if(z) ids.push(z.dm); }
+    else if(r==="police"||r==="traffic"){ if(z) ids.push(...(z.police.length?z.police:[z.dm])); }
+    else if(r==="vet"){ if(z) ids.push(...z.vet); }
+    else if(r==="foodLocal"){ if(z) ids.push(...z.food); }
+    else ids.push(r);
+  });
+  return [...new Set(ids)];
+}
 const depts = () => deptIds().map(id=>CONFIG.depts[id]).filter(Boolean);
 const recipients = () => [...new Set(depts().map(d=>d.email).filter(Boolean))];
 // Priority order: issue-specific bodies → department accounts (CM etc.) → always-tagged
-const xHandles = () => [...new Set([...(CONFIG.tags.x[S.cat]||[]), ...depts().flatMap(d=>d.x||[]), ...CONFIG.tags.alwaysX])];
+const xHandles = () => [...new Set([...(CONFIG.tags.x[S.cat]||[]), ...depts().flatMap(d=>d.x||[]), ...((CONFIG.zones[zoneId()]||{}).x||[]), ...CONFIG.tags.alwaysX])];
 const igHandles = () => [...new Set([...(CONFIG.tags.ig[S.cat]||[]), ...depts().flatMap(d=>d.ig||[]), ...CONFIG.tags.alwaysIG])];
 const hashtags = () => [...new Set([...(CONFIG.issueHashtags[S.cat]||[]), ...CONFIG.hashtags])];
 function renderSentTo(){
   const el=$("sentTo"); if(!el||!S.cat) return;
-  el.innerHTML=`<b>${t("sentTo")}</b><ul>`+depts().map(d=>`<li>${lang==="hi"?d.hi:d.en}</li>`).join("")+`</ul>`;
+  el.innerHTML=(zoneName()?`<p class="zoneLine">${ICON.pin}<span>${zoneName()}</span></p>`:"")+`<b>${t("sentTo")}</b><ul>`+depts().map(d=>`<li>${lang==="hi"?d.hi:d.en}</li>`).join("")+`</ul>`;
 }
 
 /* X post text, kept within 280 characters (links count as 23).
